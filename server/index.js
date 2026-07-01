@@ -3,18 +3,22 @@ const config = require('./src/config/env');
 const prisma = require('./src/config/db');
 
 const PORT = config.port || 5000;
+const HOST = '0.0.0.0'; // Bind to all interfaces for Railway/cloud hosting
 
 async function startServer() {
   try {
+    console.log(`⏳ Connecting to database...`);
     // Test Database connection
     await prisma.$connect();
     console.log('🔌 Connected to PostgreSQL Database via Prisma.');
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running in ${config.env} mode on http://localhost:${PORT}`);
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 Server running in ${config.env} mode on http://${HOST}:${PORT}`);
+      console.log(`✅ Health check available at http://${HOST}:${PORT}/health`);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('❌ Failed to start server:', error.message);
+    console.error(error);
     process.exit(1);
   }
 }
