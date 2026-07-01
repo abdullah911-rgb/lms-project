@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
 const prisma = require('../config/db');
 const config = require('../config/env');
 const {
