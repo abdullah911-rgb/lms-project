@@ -9,9 +9,7 @@ import {
   IoCloseOutline, 
   IoChevronDownOutline, 
   IoLogOutOutline, 
-  IoPersonOutline, 
   IoReaderOutline,
-  IoNotificationsOutline
 } from 'react-icons/io5';
 
 const Navbar = () => {
@@ -55,13 +53,20 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 sm:h-20">
           
           {/* Logo */}
-          <Link to={ROUTES.HOME} className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-primary-600 to-primary-400 text-white font-heading font-bold text-xl shadow-md shadow-primary-500/20">
-              L
+          <Link to={ROUTES.HOME} className="flex items-center gap-3">
+            <img
+              src="/Logo.jpeg"
+              alt="Swift Institute of Safety & Technology"
+              className="h-12 w-12 object-contain rounded-lg"
+            />
+            <div className="flex flex-col leading-tight">
+              <span className="font-heading font-extrabold text-lg tracking-tight text-primary-700">
+                SWIFT
+              </span>
+              <span className="text-[10px] font-semibold text-accent-600 uppercase tracking-widest hidden sm:block">
+                Institute of Safety & Technology
+              </span>
             </div>
-            <span className="font-heading font-bold text-xl tracking-tight text-slate-800">
-              LMS<span className="text-primary-500">SaaS</span>
-            </span>
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -73,8 +78,8 @@ const Navbar = () => {
                 className={({ isActive }) => 
                   `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 
                   ${isActive 
-                    ? 'text-primary-600 bg-primary-50/50' 
-                    : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
+                    ? 'text-primary-700 bg-primary-50/70 font-semibold' 
+                    : 'text-slate-600 hover:text-primary-700 hover:bg-slate-50'
                   }`
                 }
               >
@@ -97,7 +102,7 @@ const Navbar = () => {
                   </div>
                   <div className="text-left">
                     <p className="text-xs font-semibold text-slate-800 leading-tight">{user.name}</p>
-                    <p className="text-[10px] text-slate-400 tracking-wider font-semibold uppercase">{user.role}</p>
+                    <p className="text-[10px] text-accent-600 tracking-wider font-semibold uppercase">{user.role}</p>
                   </div>
                   <IoChevronDownOutline size={14} className={`text-slate-400 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -118,9 +123,9 @@ const Navbar = () => {
                         <Link
                           to={getPortalLink(user.role)}
                           onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary-600 transition-all"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700 transition-all"
                         >
-                          <IoReaderOutline size={18} className="text-slate-400 group-hover:text-primary-600" />
+                          <IoReaderOutline size={18} className="text-slate-400" />
                           <span>{getPortalLabel(user.role)}</span>
                         </Link>
                         
@@ -181,8 +186,8 @@ const Navbar = () => {
                   className={({ isActive }) => 
                     `block px-4 py-3 rounded-xl text-base font-medium transition-all
                     ${isActive 
-                      ? 'text-primary-600 bg-primary-50' 
-                      : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
+                      ? 'text-primary-700 bg-primary-50 font-semibold' 
+                      : 'text-slate-600 hover:text-primary-700 hover:bg-slate-50'
                     }`
                   }
                 >
@@ -200,13 +205,13 @@ const Navbar = () => {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-slate-800">{user.name}</p>
-                      <p className="text-xs text-slate-400 font-semibold uppercase">{user.role}</p>
+                      <p className="text-xs text-accent-600 font-semibold uppercase">{user.role}</p>
                     </div>
                   </div>
                   <Link
                     to={getPortalLink(user.role)}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-primary-600 transition-all rounded-xl"
+                    className="block px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-primary-700 transition-all rounded-xl"
                   >
                     {getPortalLabel(user.role)}
                   </Link>

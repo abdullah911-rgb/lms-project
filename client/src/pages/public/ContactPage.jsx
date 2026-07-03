@@ -22,12 +22,12 @@ const ContactPage = () => {
         
         {/* Title */}
         <div className="text-center space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-3 py-1 rounded-full">Get In Touch</span>
-          <h1 className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900 leading-none">
-            We'd Love To Hear From You
+          <span className="text-xs font-bold uppercase tracking-wider text-accent-700 bg-accent-50 px-3 py-1 rounded-full">Get In Touch</span>
+          <h1 className="text-3xl sm:text-4xl font-heading font-extrabold text-primary-950 leading-none">
+            Contact Swift Institute
           </h1>
           <p className="text-sm text-slate-500 max-w-md mx-auto">
-            Have questions about group licenses or custom course schedules? Fill out the form.
+            Have questions about registrations, group corporate training, or certification schedules? Get in touch.
           </p>
         </div>
 
@@ -38,38 +38,38 @@ const ContactPage = () => {
           <div className="lg:col-span-5 space-y-6">
             <Card hover={false} className="border border-slate-100 p-8 space-y-8 bg-white">
               <div>
-                <h3 className="text-lg font-heading font-bold text-slate-800">Support Information</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Reach out directly through email, phone, or stop by our headquarters office.</p>
+                <h3 className="text-lg font-heading font-bold text-primary-905">Support Information</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Reach out directly through email, phone, or stop by our office.</p>
               </div>
 
               <div className="space-y-6">
                 <div className="flex gap-4 items-start">
-                  <div className="p-3 rounded-xl bg-primary-50 text-primary-600">
+                  <div className="p-3 rounded-xl bg-primary-50 text-primary-700">
                     <IoMailOutline size={20} />
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-700">Email Address</h4>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">support@lmssaas.com</p>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">info@swiftinstitute.edu.pk</p>
                   </div>
                 </div>
 
                 <div className="flex gap-4 items-start">
-                  <div className="p-3 rounded-xl bg-primary-50 text-primary-600">
+                  <div className="p-3 rounded-xl bg-primary-50 text-primary-700">
                     <IoCallOutline size={20} />
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-700">Phone Support</h4>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">+1 (800) 123-4567</p>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">+92 300 0000000</p>
                   </div>
                 </div>
 
                 <div className="flex gap-4 items-start">
-                  <div className="p-3 rounded-xl bg-primary-50 text-primary-600">
+                  <div className="p-3 rounded-xl bg-primary-50 text-primary-700">
                     <IoLocationOutline size={20} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-700">Office Location</h4>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5 leading-relaxed">100 Technology Dr, Suite 500, San Francisco, CA</p>
+                    <h4 className="text-sm font-semibold text-slate-700">Campus Location</h4>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5 leading-relaxed">Swift Institute campus, Pakistan</p>
                   </div>
                 </div>
               </div>

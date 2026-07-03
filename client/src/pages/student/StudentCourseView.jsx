@@ -1,0 +1,418 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import { enrollmentService } from '../../services/portalService';
+import { ROUTES } from '../../constants';
+import { 
+  IoChevronBackOutline, 
+  IoPlayCircleOutline, 
+  IoDocumentTextOutline, 
+  IoFileTrayFullOutline, 
+  IoVideocamOutline, 
+  IoMegaphoneOutline,
+  IoCheckmarkCircleSharp, 
+  IoCheckmarkCircleOutline, 
+  IoDownloadOutline,
+  IoDesktopOutline
+} from 'react-icons/io5';
+import toast from 'react-hot-toast';
+
+const StudentCourseView = () => {
+  const { courseId } = useParams();
+  const [enrollment, setEnrollment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [currentLesson, setCurrentLesson] = useState(null);
+  const [activeTab, setActiveTab] = useState('CONTENT'); // 'CONTENT', 'MEETINGS', 'ANNOUNCEMENTS'
+  const [completedLessonIds, setCompletedLessonIds] = useState(new Set());
+
+  const fetchCourseAccess = async (autoSelect = false) => {
+    try {
+      const res = await enrollmentService.getCourseAccess(courseId);
+      if (res.data?.data?.enrollment) {
+        const enrollData = res.data.data.enrollment;
+        setEnrollment(enrollData);
+        
+        // Extract completed lessons
+        const completedSet = new Set(
+          enrollData.lessonProgress
+            ?.filter((p) => p.isCompleted)
+            ?.map((p) => p.lessonId) || []
+        );
+        setCompletedLessonIds(completedSet);
+
+        // Auto select first lesson or first incomplete lesson
+        if (autoSelect || !currentLesson) {
+          let selected = null;
+          // Find first incomplete lesson
+          for (const m of enrollData.course.modules || []) {
+            for (const l of m.lessons || []) {
+              if (!completedSet.has(l.id)) {
+                selected = l;
+                break;
+              }
+            }
+            if (selected) break;
+          }
+          // Fallback to first lesson
+          if (!selected && enrollData.course.modules?.[0]?.lessons?.[0]) {
+            selected = enrollData.course.modules[0].lessons[0];
+          }
+          setCurrentLesson(selected);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching course access:', err);
+      toast.error('Failed to load course contents.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourseAccess(true);
+  }, [courseId]);
+
+  const handleLessonSelect = (lesson) => {
+    setCurrentLesson(lesson);
+    setActiveTab('CONTENT');
+  };
+
+  const handleMarkComplete = async () => {
+    if (!currentLesson) return;
+    try {
+      const res = await enrollmentService.completeLesson(courseId, currentLesson.id);
+      if (res.data?.success) {
+        toast.success('Lesson marked complete!');
+        // Update local set
+        setCompletedLessonIds((prev) => {
+          const next = new Set(prev);
+          next.add(currentLesson.id);
+          return next;
+        });
+        // Refresh enrollment data (to update progress percent and checkmarks)
+        await fetchCourseAccess(false);
+      }
+    } catch (err) {
+      console.error('Error completing lesson:', err);
+      toast.error('Failed to update progress.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary-600 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!enrollment) {
+    return (
+      <div className="text-center py-12 space-y-4">
+        <p className="text-slate-500 font-medium">Enrollment not found or unauthorized.</p>
+        <Link to={ROUTES.STUDENT_MY_COURSES}>
+          <Button variant="primary" size="sm">Back to My Courses</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const { course } = enrollment;
+
+  return (
+    <div className="space-y-6 font-sans">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Link to={ROUTES.STUDENT_MY_COURSES} className="p-2 rounded-xl bg-white border border-slate-100 hover:bg-slate-50 text-slate-600 transition-all">
+          <IoChevronBackOutline size={18} />
+        </Link>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-heading font-bold text-primary-900">{course.title}</h1>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-xs text-slate-400 font-semibold">Instructor: {course.instructor?.name}</p>
+            <span className="text-[10px] font-bold text-accent-700 bg-accent-50 px-2 py-0.5 rounded border border-accent-100 uppercase">
+              {enrollment.progress}% Complete
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Side: Viewer & Tabs (8 cols) */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Main Viewer Card */}
+          <Card hover={false} className="bg-white border border-slate-100 overflow-hidden p-0 rounded-2xl">
+            {/* Viewer Navbar Tabs */}
+            <div className="flex border-b border-slate-100 bg-slate-50/50">
+              <button
+                onClick={() => setActiveTab('CONTENT')}
+                className={`flex-1 py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all border-b-2 cursor-pointer ${
+                  activeTab === 'CONTENT'
+                    ? 'border-primary-600 text-primary-700 bg-white'
+                    : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <IoPlayCircleOutline size={18} />
+                <span>Lesson Viewer</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('MEETINGS')}
+                className={`flex-1 py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all border-b-2 cursor-pointer ${
+                  activeTab === 'MEETINGS'
+                    ? 'border-primary-600 text-primary-700 bg-white'
+                    : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <IoVideocamOutline size={18} />
+                <span>Live Zoom Classes ({course.zoomMeetings?.length || 0})</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('ANNOUNCEMENTS')}
+                className={`flex-1 py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all border-b-2 cursor-pointer ${
+                  activeTab === 'ANNOUNCEMENTS'
+                    ? 'border-primary-600 text-primary-700 bg-white'
+                    : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <IoMegaphoneOutline size={18} />
+                <span>Announcements ({course.announcements?.length || 0})</span>
+              </button>
+            </div>
+
+            {/* Tab Contents */}
+            <div className="p-6">
+              {activeTab === 'CONTENT' && (
+                <div className="space-y-6">
+                  {currentLesson ? (
+                    <>
+                      <div className="flex justify-between items-start gap-4">
+                        <div>
+                          <span className="text-[10px] font-bold text-accent-600 uppercase tracking-widest">{currentLesson.type} Lecture</span>
+                          <h2 className="text-lg font-bold text-primary-900 mt-1">{currentLesson.title}</h2>
+                          {currentLesson.description && (
+                            <p className="text-sm text-slate-500 mt-2 leading-relaxed">{currentLesson.description}</p>
+                          )}
+                        </div>
+
+                        {/* Completed Status Checkmark */}
+                        <div>
+                          {completedLessonIds.has(currentLesson.id) ? (
+                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                              <IoCheckmarkCircleSharp size={16} /> Completed
+                            </span>
+                          ) : (
+                            <Button variant="primary" size="sm" onClick={handleMarkComplete}>
+                              Mark Complete
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Video Player or Document Content */}
+                      <div className="border border-slate-100 rounded-2xl bg-slate-50 overflow-hidden">
+                        {currentLesson.type === 'VIDEO' && currentLesson.videoUrl && (
+                          <div className="aspect-video w-full">
+                            <iframe
+                              src={currentLesson.videoUrl}
+                              title={currentLesson.title}
+                              className="w-full h-full border-0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            ></iframe>
+                          </div>
+                        )}
+
+                        {currentLesson.type === 'PDF' && currentLesson.content && (
+                          <div className="p-6 flex flex-col items-center text-center space-y-4">
+                            <IoDocumentTextOutline size={48} className="text-accent-500" />
+                            <div>
+                              <h3 className="font-bold text-slate-800">Syllabus PDF / Manual</h3>
+                              <p className="text-xs text-slate-500 mt-1">Open the manual file linked below to read content details.</p>
+                            </div>
+                            <a href={currentLesson.content} target="_blank" rel="noreferrer">
+                              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                                <IoDesktopOutline /> View Document
+                              </Button>
+                            </a>
+                          </div>
+                        )}
+
+                        {currentLesson.type === 'TEXT' && (
+                          <div className="p-6 text-sm text-slate-700 leading-relaxed bg-white prose max-w-none">
+                            {currentLesson.content || <p className="text-slate-400">No content text specified for this lesson.</p>}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Lesson Materials / Resources Download */}
+                      {currentLesson.resources?.length > 0 && (
+                        <div className="space-y-3">
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Downloadable Class Materials</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {currentLesson.resources.map((res) => (
+                              <div key={res.id} className="p-3 border border-slate-100 rounded-xl flex items-center justify-between gap-3 bg-white">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="p-2 bg-primary-50 text-primary-600 rounded-lg">
+                                    <IoFileTrayFullOutline size={16} />
+                                  </div>
+                                  <div className="text-left leading-tight">
+                                    <p className="text-xs font-bold text-slate-700 line-clamp-1">{res.name}</p>
+                                    <p className="text-[10px] text-slate-400 capitalize mt-0.5">{res.fileType}</p>
+                                  </div>
+                                </div>
+                                <a href={res.fileUrl} download target="_blank" rel="noreferrer" className="text-slate-400 hover:text-primary-600 p-1.5 hover:bg-slate-50 rounded-lg">
+                                  <IoDownloadOutline size={18} />
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-12 text-slate-400">
+                      Select a syllabus lecture from the sidebar outline to begin.
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'MEETINGS' && (
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-base font-bold text-primary-900">Virtual Classrooms & Zoom Portal</h2>
+                    <p className="text-xs text-slate-500 mt-1">Access scheduled sessions and connect with Swift trainers live.</p>
+                  </div>
+
+                  {(!course.zoomMeetings || course.zoomMeetings.length === 0) ? (
+                    <div className="p-8 border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-sm">
+                      No active Zoom sessions scheduled for this course.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {course.zoomMeetings.map((meeting) => (
+                        <div key={meeting.id} className="p-4 border border-slate-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white hover:border-primary-100">
+                          <div className="space-y-1">
+                            <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-primary-100 text-primary-800 px-2 py-0.5 rounded-full">
+                              {meeting.status}
+                            </span>
+                            <h4 className="text-sm font-bold text-slate-800">{meeting.topic}</h4>
+                            <p className="text-[11px] text-slate-500">
+                              Date: {new Date(meeting.startTime).toLocaleString()} ({meeting.duration} Mins duration)
+                            </p>
+                            {meeting.agenda && <p className="text-xs text-slate-400 mt-1">{meeting.agenda}</p>}
+                          </div>
+                          <a href={meeting.joinUrl} target="_blank" rel="noreferrer">
+                            <Button variant="primary" size="sm" className="flex items-center gap-2">
+                              <IoVideocamOutline size={16} /> Join Zoom Class
+                            </Button>
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'ANNOUNCEMENTS' && (
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-base font-bold text-primary-900">Course Board Announcements</h2>
+                    <p className="text-xs text-slate-500 mt-1">Important notifications and notes published by your course trainer.</p>
+                  </div>
+
+                  {(!course.announcements || course.announcements.length === 0) ? (
+                    <div className="p-8 border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-sm">
+                      No announcements posted yet.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {course.announcements.map((ann) => (
+                        <div key={ann.id} className="p-5 border border-slate-100 rounded-2xl bg-white space-y-2">
+                          <div className="flex justify-between items-start gap-4">
+                            <h4 className="text-sm font-bold text-slate-800">{ann.title}</h4>
+                            <span className="text-[10px] text-slate-400 font-semibold">
+                              {new Date(ann.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">{ann.body}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+
+        {/* Right Side: Syllabus Outline / Lessons Sidebar (4 cols) */}
+        <div className="lg:col-span-4 space-y-6">
+          <Card hover={false} className="bg-white border border-slate-100 p-6 rounded-2xl space-y-4">
+            <h3 className="text-base font-heading font-bold text-primary-900 pb-2 border-b border-slate-50">
+              Syllabus Outline
+            </h3>
+            
+            {(!course.modules || course.modules.length === 0) ? (
+              <p className="text-xs text-slate-400">No content modules published for this course.</p>
+            ) : (
+              <div className="space-y-4 overflow-y-auto max-h-[500px] pr-1">
+                {course.modules.map((module) => (
+                  <div key={module.id} className="space-y-2">
+                    <h4 className="text-xs font-bold text-primary-800 uppercase tracking-wide bg-primary-50/70 p-2 rounded-lg">
+                      Module {module.order}: {module.title}
+                    </h4>
+                    
+                    <div className="space-y-1 pl-1">
+                      {module.lessons?.map((lesson) => {
+                        const isCurrent = currentLesson?.id === lesson.id;
+                        const isCompleted = completedLessonIds.has(lesson.id);
+
+                        return (
+                          <button
+                            key={lesson.id}
+                            onClick={() => handleLessonSelect(lesson)}
+                            className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all text-xs cursor-pointer ${
+                              isCurrent
+                                ? 'bg-primary-600 text-white font-semibold'
+                                : 'text-slate-600 hover:bg-slate-50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="shrink-0">
+                                {lesson.type === 'VIDEO' ? (
+                                  <IoPlayCircleOutline size={16} className={isCurrent ? 'text-white' : 'text-primary-600'} />
+                                ) : (
+                                  <IoDocumentTextOutline size={16} className={isCurrent ? 'text-white' : 'text-accent-500'} />
+                                )}
+                              </span>
+                              <span className="truncate">{lesson.title}</span>
+                            </div>
+                            
+                            <span className="shrink-0 ml-2">
+                              {isCompleted ? (
+                                <IoCheckmarkCircleSharp size={16} className={isCurrent ? 'text-white' : 'text-emerald-500'} />
+                              ) : (
+                                <IoCheckmarkCircleOutline size={16} className="text-slate-300" />
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default StudentCourseView;

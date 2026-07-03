@@ -6,24 +6,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 const FAQPage = () => {
   const faqs = [
     {
-      question: 'How do I join a live Zoom meeting class?',
-      answer: 'Once enrolled in a course with live classes, a notification and link will appear on your Student Portal under "Upcoming Live Classes". You can join the session directly inside the platform without needing separate login links.'
+      question: 'How do I join the live online sessions?',
+      answer: 'Once enrolled in a SWIFT program, a join link will appear in your Student Portal under the "Live Zoom Classes" tab for that course at the scheduled class time. You can launch the virtual classroom directly from our portal.'
     },
     {
-      question: 'Are there system requirements for downloadable materials?',
-      answer: 'No. Downloadable resources are primarily standard PDF format slides, templates, or zip files that can be opened on any modern mobile device or laptop computer.'
+      question: 'Can I access the training manuals offline?',
+      answer: 'Yes! All modules include downloadable slide decks, safety checklists, and reference guides in PDF format, which you can save to study offline.'
     },
     {
-      question: 'How is my course progress calculated?',
-      answer: 'Your progress percentage updates automatically as you click "Complete Lesson" or finish watching course videos. You can track this on your portfolio course dashboard.'
+      question: 'How is syllabus progress calculated?',
+      answer: 'Your progress percentage increases automatically as you mark lessons completed in the course view. Once it reaches 100%, you can generate your certificate.'
     },
     {
-      question: 'Are completion certificates verifiable?',
-      answer: 'Yes! Every certificate generated has a unique verification code that employers can check on the public website to verify its validity.'
+      question: 'Are Swift Institute certificates internationally recognized?',
+      answer: 'Yes. Our certificates are issued with unique verification codes that organizations can check on our public website to verify registration details and skills validation.'
     },
     {
-      question: 'Can I get a refund if I am unsatisfied?',
-      answer: 'We offer a 14-day refund policy for paid courses if the student progress is below 15% of the total lessons. Contact support for requests.'
+      question: 'Who should enroll in safety and tech programs?',
+      answer: 'Our courses are tailored for engineers, safety officers, supervisors, technicians, and students looking to comply with industrial safety standards or gain advanced technical skills.'
     }
   ];
 
@@ -39,12 +39,12 @@ const FAQPage = () => {
         
         {/* Title */}
         <div className="text-center space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-3 py-1 rounded-full">Support Centre</span>
-          <h1 className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900 leading-none">
+          <span className="text-xs font-bold uppercase tracking-wider text-accent-700 bg-accent-50 px-3 py-1 rounded-full">FAQ Center</span>
+          <h1 className="text-3xl sm:text-4xl font-heading font-extrabold text-primary-950 leading-none">
             Frequently Asked Questions
           </h1>
           <p className="text-sm text-slate-500 max-w-md mx-auto">
-            Find answers to common questions about accounts, zoom classes, and verification.
+            Find answers to common questions about enrollment, certification, and training formats at SWIFT.
           </p>
         </div>
 
@@ -60,7 +60,7 @@ const FAQPage = () => {
                 >
                   <span className="text-sm sm:text-base font-heading font-semibold">{faq.question}</span>
                   <IoChevronDownOutline 
-                    className={`text-slate-400 transition-transform duration-200 flex-shrink-0 ml-4 ${isOpen ? 'rotate-180 text-primary-600' : ''}`} 
+                    className={`text-slate-450 transition-transform duration-200 flex-shrink-0 ml-4 ${isOpen ? 'rotate-180 text-accent-600' : ''}`} 
                     size={18}
                   />
                 </button>
@@ -73,7 +73,7 @@ const FAQPage = () => {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="px-6 pb-6 text-xs sm:text-sm text-slate-450 leading-relaxed border-t border-slate-50 pt-4 bg-slate-50/20 text-slate-500">
+                      <div className="px-6 pb-6 text-xs sm:text-sm leading-relaxed border-t border-slate-50 pt-4 bg-slate-50/20 text-slate-500">
                         {faq.answer}
                       </div>
                     </motion.div>

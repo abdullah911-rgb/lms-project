@@ -61,14 +61,14 @@ const HomePage = () => {
               transition={{ duration: 0.6 }}
               className="lg:col-span-6 space-y-6 text-center lg:text-left"
             >
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-primary-100/60 text-primary-700 border border-primary-200">
-                ✨ The ultimate learning destination
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-accent-100/60 text-accent-700 border border-accent-200">
+                🛡️ Pakistan's Premier Safety & Technology Institute
               </span>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-slate-900 leading-none">
-                Master New Skills with <span className="bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">Expert-Led</span> Courses
+                Learn <span className="bg-gradient-to-r from-primary-700 to-accent-500 bg-clip-text text-transparent">Safety & Technology</span> from Certified Experts
               </h1>
               <p className="text-base sm:text-lg text-slate-500 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Join our premium learning platform. Attend live Zoom interactive classes, access downloadable notes, track your daily progress, and receive verifiable completion certificates.
+                Join Swift Institute of Safety & Technology — attend live Zoom interactive classes, access downloadable course materials, track your progress, and earn internationally recognized certificates.
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
@@ -144,23 +144,23 @@ const HomePage = () => {
       </section>
 
       {/* 2. Platform Statistics Section */}
-      <section className="bg-slate-900 py-10 sm:py-16 text-white">
+      <section className="bg-primary-800 py-10 sm:py-16 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-primary-400">{stats.totalCourses}</p>
-            <p className="text-xs sm:text-sm text-slate-400 uppercase tracking-wider font-semibold mt-1">Active Courses</p>
+            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalCourses}</p>
+            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Active Courses</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-primary-400">{stats.totalStudents}</p>
-            <p className="text-xs sm:text-sm text-slate-400 uppercase tracking-wider font-semibold mt-1">Happy Learners</p>
+            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalStudents}</p>
+            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Certified Learners</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-primary-400">{stats.totalInstructors}</p>
-            <p className="text-xs sm:text-sm text-slate-400 uppercase tracking-wider font-semibold mt-1">Expert Mentors</p>
+            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalInstructors}</p>
+            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Expert Trainers</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-primary-400">{stats.totalEnrollments}</p>
-            <p className="text-xs sm:text-sm text-slate-400 uppercase tracking-wider font-semibold mt-1">Course Enrollments</p>
+            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalEnrollments}</p>
+            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Course Enrollments</p>
           </div>
         </div>
       </section>
@@ -168,9 +168,9 @@ const HomePage = () => {
       {/* 3. Core Features Section */}
       <section className="py-20 sm:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-3 py-1 rounded-full">Core Pillars</span>
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-900">Why Learn With Our System?</h2>
-          <p className="text-slate-500 max-w-lg mx-auto text-sm sm:text-base">Everything you need to successfully transition to a modern technology job role.</p>
+          <span className="text-xs font-bold uppercase tracking-wider text-primary-700 bg-primary-50 px-3 py-1 rounded-full">Core Pillars</span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-slate-900">Why Train With SWIFT?</h2>
+          <p className="text-slate-500 max-w-lg mx-auto text-sm sm:text-base">Everything you need to successfully gain professional safety & technology certifications.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
             
@@ -240,8 +240,8 @@ const HomePage = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-600 to-primary-500 text-white font-heading font-bold text-lg">
-                        LMS
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-700 to-accent-500 text-white font-heading font-bold text-lg">
+                        SWIFT
                       </div>
                     )}
                     <span className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-white/90 backdrop-blur text-slate-800 border border-white/50">
@@ -286,13 +286,14 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 5. Professional CTA / Newsletter Section */}
-      <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_90%_10%,rgba(14,146,233,0.15),transparent)]"></div>
+      {/* 5. Professional CTA Section */}
+      <section className="py-20 bg-primary-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_90%_10%,rgba(201,162,39,0.15),transparent)]"></div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold">Start Learning Professional Skills Today</h2>
-          <p className="text-slate-400 max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
-            Create a student account in seconds, browse our course portfolio, and level up your software, data, or product skills immediately.
+          <span className="inline-block px-3 py-1 rounded-full bg-accent-500/20 text-accent-300 text-xs font-bold uppercase tracking-widest mb-2">Join Swift Institute Today</span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold">Start Your Safety & Technology Journey</h2>
+          <p className="text-primary-200 max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
+            Enroll now in internationally recognized safety and technology programs. Build expertise that makes workplaces safer and careers stronger.
           </p>
           <div className="flex items-center justify-center gap-4 pt-4">
             <Link to={ROUTES.REGISTER}>

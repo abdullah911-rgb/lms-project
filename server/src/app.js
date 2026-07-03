@@ -13,6 +13,10 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const courseRoutes = require('./routes/courseRoutes');
+const enrollmentRoutes = require('./routes/enrollmentRoutes');
+const moduleRoutes = require('./routes/moduleRoutes');
+const lessonRoutes = require('./routes/lessonRoutes');
+const zoomRoutes = require('./routes/zoomRoutes');
 
 const app = express();
 
@@ -43,6 +47,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/modules', moduleRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/zoom', zoomRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

@@ -26,9 +26,18 @@ import ForgotPasswordPage from './pages/public/ForgotPasswordPage';
 import ResetPasswordPage from './pages/public/ResetPasswordPage';
 import NotFoundPage from './pages/public/NotFoundPage';
 
-// Portal Dashboards (Placeholders)
+// Portal Dashboards
 import StudentDashboard from './pages/student/StudentDashboard';
+import MyCourses from './pages/student/MyCourses';
+import StudentCourseView from './pages/student/StudentCourseView';
+import StudentProfile from './pages/student/StudentProfile';
+
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
+import InstructorCourses from './pages/instructor/InstructorCourses';
+import CourseForm from './pages/instructor/CourseForm';
+import InstructorStudents from './pages/instructor/InstructorStudents';
+import InstructorProfile from './pages/instructor/InstructorProfile';
+
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
@@ -84,6 +93,9 @@ function App() {
           >
             <Route index element={<Navigate to={ROUTES.STUDENT_DASHBOARD} replace />} />
             <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="my-courses" element={<MyCourses />} />
+            <Route path="course/:courseId" element={<StudentCourseView />} />
+            <Route path="profile" element={<StudentProfile />} />
           </Route>
 
           {/* Instructor Dashboard Layout */}
@@ -97,6 +109,11 @@ function App() {
           >
             <Route index element={<Navigate to={ROUTES.INSTRUCTOR_DASHBOARD} replace />} />
             <Route path="dashboard" element={<InstructorDashboard />} />
+            <Route path="courses" element={<InstructorCourses />} />
+            <Route path="courses/new" element={<CourseForm />} />
+            <Route path="courses/:courseId/edit" element={<CourseForm />} />
+            <Route path="students" element={<InstructorStudents />} />
+            <Route path="profile" element={<InstructorProfile />} />
           </Route>
 
           {/* Admin Dashboard Layout */}
