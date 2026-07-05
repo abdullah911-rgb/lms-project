@@ -18,24 +18,19 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
         
         {/* Brand Information */}
-        <div className="space-y-4">
+          <div className="space-y-4">
           <div className="flex items-center gap-3">
             <img
               src="/Logo.jpeg"
-              alt="Swift Institute"
+              alt="Swift LMS"
               className="h-12 w-12 object-contain rounded-lg bg-white/5 p-0.5"
             />
-            <div className="leading-tight">
-              <span className="font-heading font-extrabold text-lg tracking-tight text-white block">
-                SWIFT
-              </span>
-              <span className="text-[10px] font-semibold text-accent-400 uppercase tracking-widest">
-                Safety & Technology
-              </span>
-            </div>
+            <span className="font-heading font-extrabold text-xl tracking-tight text-white">
+              Swift
+            </span>
           </div>
           <p className="text-sm leading-relaxed text-slate-400">
-            Swift Institute of Safety & Technology (SMC-PVT) LTD — empowering professionals with industry-certified safety and technology education.
+            Swift — empowering professionals with industry-certified safety and technology education.
           </p>
           
           {/* Social Links */}

@@ -178,6 +178,9 @@ model Course {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
+  pendingApproval  Boolean      @default(false)
+  pendingEdits     Json?
+
   category         Category     @relation(fields: [categoryId], references: [id])
   instructor       User         @relation("InstructorCourses", fields: [instructorId], references: [id])
   modules          Module[]
@@ -185,6 +188,7 @@ model Course {
   zoomMeetings     ZoomMeeting[]
   announcements    Announcement[]
   certificates     Certificate[]
+  resources        Resource[]
 
   @@index([slug])
   @@index([categoryId])
@@ -245,12 +249,15 @@ model Resource {
   fileUrl   String
   fileType  String
   fileSize  Int?
-  lessonId  String
+  lessonId  String?
+  courseId  String?
   createdAt DateTime @default(now())
 
-  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson    Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([lessonId])
+  @@index([courseId])
   @@map("resources")
 }
 

@@ -56,17 +56,12 @@ const Navbar = () => {
           <Link to={ROUTES.HOME} className="flex items-center gap-3">
             <img
               src="/Logo.jpeg"
-              alt="Swift Institute of Safety & Technology"
+              alt="Swift LMS"
               className="h-12 w-12 object-contain rounded-lg"
             />
-            <div className="flex flex-col leading-tight">
-              <span className="font-heading font-extrabold text-lg tracking-tight text-primary-700">
-                SWIFT
-              </span>
-              <span className="text-[10px] font-semibold text-accent-600 uppercase tracking-widest hidden sm:block">
-                Institute of Safety & Technology
-              </span>
-            </div>
+            <span className="font-heading font-extrabold text-xl tracking-tight text-primary-700">
+              Swift
+            </span>
           </Link>
 
           {/* Desktop Navigation Links */}

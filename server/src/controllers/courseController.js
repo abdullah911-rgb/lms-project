@@ -186,11 +186,13 @@ const courseController = {
         learningOutcomes: learningOutcomes || [],
         prerequisites: prerequisites || [],
         certificate: certificate !== 'false',
+        status: 'DRAFT',
+        pendingApproval: false,
       },
       include: { category: true, instructor: { select: { id: true, name: true } } },
     });
 
-    sendSuccess(res, 'Course created successfully.', { course }, 201);
+    sendSuccess(res, 'Course created successfully. Submit it for admin approval when ready.', { course }, 201);
   }),
 
   // PUT /api/courses/:id
@@ -206,6 +208,33 @@ const courseController = {
 
     const { title, description, shortDescription, categoryId, level, price, isFree, language, status, learningOutcomes, prerequisites, certificate } = req.body;
     const data = {};
+
+    // Instructors can only update details; changes go into pendingEdits for admin review
+    if (req.user.role === 'INSTRUCTOR') {
+      // Store proposed edits — admin will review and apply
+      const pendingEdits = {};
+      if (title) { pendingEdits.title = title; pendingEdits.slug = slugify(title, { lower: true, strict: true }) + '-' + Date.now(); }
+      if (description) pendingEdits.description = description;
+      if (shortDescription) pendingEdits.shortDescription = shortDescription;
+      if (categoryId) pendingEdits.categoryId = categoryId;
+      if (level) pendingEdits.level = level;
+      if (price !== undefined) pendingEdits.price = parseFloat(price);
+      if (isFree !== undefined) pendingEdits.isFree = isFree === 'true' || isFree === true;
+      if (language) pendingEdits.language = language;
+      if (learningOutcomes) pendingEdits.learningOutcomes = learningOutcomes;
+      if (prerequisites) pendingEdits.prerequisites = prerequisites;
+      if (certificate !== undefined) pendingEdits.certificate = certificate !== 'false';
+      if (req.file) pendingEdits.thumbnail = `/uploads/${req.file.filename}`;
+
+      const updated = await prisma.course.update({
+        where: { id },
+        data: { pendingEdits, pendingApproval: true },
+        include: { category: true },
+      });
+      return sendSuccess(res, 'Edit request submitted for admin approval.', { course: updated });
+    }
+
+    // Admin can update directly
     if (title) { data.title = title; data.slug = slugify(title, { lower: true, strict: true }) + '-' + Date.now(); }
     if (description) data.description = description;
     if (shortDescription) data.shortDescription = shortDescription;
@@ -214,7 +243,7 @@ const courseController = {
     if (price !== undefined) data.price = parseFloat(price);
     if (isFree !== undefined) data.isFree = isFree === 'true' || isFree === true;
     if (language) data.language = language;
-    if (status && req.user.role === 'ADMIN') data.status = status;
+    if (status) data.status = status;
     if (learningOutcomes) data.learningOutcomes = learningOutcomes;
     if (prerequisites) data.prerequisites = prerequisites;
     if (certificate !== undefined) data.certificate = certificate !== 'false';
@@ -244,6 +273,74 @@ const courseController = {
     }
     await prisma.course.update({ where: { id }, data: { status: 'ARCHIVED' } });
     sendSuccess(res, 'Course archived.');
+  }),
+
+  // PATCH /api/courses/:id/submit-approval (Instructor) — submit new course for admin approval
+  submitForApproval: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const course = await prisma.course.findUnique({ where: { id } });
+    if (!course) return sendError(res, 'Course not found.', 404);
+    if (course.instructorId !== req.user.id) return sendError(res, 'Not authorized.', 403);
+    if (course.pendingApproval) return sendError(res, 'Course is already pending approval.', 400);
+
+    const updated = await prisma.course.update({
+      where: { id },
+      data: { pendingApproval: true },
+    });
+    sendSuccess(res, 'Course submitted for admin approval.', { course: updated });
+  }),
+
+  // PATCH /api/courses/:id/approve (Admin) — approve a course/edits and publish
+  approveCourse: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const course = await prisma.course.findUnique({ where: { id } });
+    if (!course) return sendError(res, 'Course not found.', 404);
+
+    // Apply any pending edits
+    const dataToApply = course.pendingEdits || {};
+    const updated = await prisma.course.update({
+      where: { id },
+      data: {
+        ...dataToApply,
+        pendingApproval: false,
+        pendingEdits: null,
+        status: 'PUBLISHED',
+      },
+    });
+    sendSuccess(res, 'Course approved and published.', { course: updated });
+  }),
+
+  // PATCH /api/courses/:id/reject (Admin) — reject a pending approval
+  rejectCourse: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const course = await prisma.course.findUnique({ where: { id } });
+    if (!course) return sendError(res, 'Course not found.', 404);
+
+    const updated = await prisma.course.update({
+      where: { id },
+      data: {
+        pendingApproval: false,
+        pendingEdits: null,
+        // Keep status as DRAFT, store rejection reason in pendingEdits field temporarily
+        pendingEdits: reason ? { rejectionReason: reason } : null,
+      },
+    });
+    sendSuccess(res, 'Course rejected.', { course: updated });
+  }),
+
+  // GET /api/courses/admin/pending — Admin: list all pending approval courses
+  getPendingApproval: asyncHandler(async (req, res) => {
+    const courses = await prisma.course.findMany({
+      where: { pendingApproval: true },
+      include: {
+        category: { select: { name: true } },
+        instructor: { select: { id: true, name: true, email: true, avatar: true } },
+        _count: { select: { enrollments: true, modules: true } },
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+    sendSuccess(res, 'Pending courses fetched.', { courses });
   }),
 
   // GET /api/courses/instructor/my-courses

@@ -39,6 +39,10 @@ import InstructorStudents from './pages/instructor/InstructorStudents';
 import InstructorProfile from './pages/instructor/InstructorProfile';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminApprovals from './pages/admin/AdminApprovals';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminCourses from './pages/admin/AdminCourses';
+import AdminEnrollments from './pages/admin/AdminEnrollments';
 
 function App() {
   return (
@@ -127,6 +131,10 @@ function App() {
           >
             <Route index element={<Navigate to={ROUTES.ADMIN_DASHBOARD} replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="approvals" element={<AdminApprovals />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="courses" element={<AdminCourses />} />
+            <Route path="enrollments" element={<AdminEnrollments />} />
           </Route>
 
         </Routes>

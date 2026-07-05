@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import { instructorService, moduleService, lessonService, zoomService } from '../../services/portalService';
+import { instructorService, moduleService, lessonService, zoomService, resourceService } from '../../services/portalService';
 import api from '../../services/api';
 import { ROUTES } from '../../constants';
 import { 
@@ -15,7 +15,11 @@ import {
   IoDocumentTextOutline,
   IoPlayCircleOutline,
   IoCreateOutline,
-  IoVideocamOutline
+  IoVideocamOutline,
+  IoCloudUploadOutline,
+  IoDocumentOutline,
+  IoCheckmarkCircleOutline,
+  IoTimeOutline
 } from 'react-icons/io5';
 import toast from 'react-hot-toast';
 
@@ -50,6 +54,14 @@ const CourseForm = () => {
   const [zoomAgenda, setZoomAgenda] = useState('');
   const [zoomDuration, setZoomDuration] = useState('60');
   const [startingClass, setStartingClass] = useState(false);
+
+  // Course approval state
+  const [courseApprovalStatus, setCourseApprovalStatus] = useState({ pendingApproval: false, status: 'DRAFT' });
+  const [submittingApproval, setSubmittingApproval] = useState(false);
+
+  // File resources state
+  const [resources, setResources] = useState([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
 
   const fetchMeetings = async (cId) => {
     setLoadingMeetings(true);
@@ -120,6 +132,7 @@ const CourseForm = () => {
             setIsFree(match.isFree);
             setLanguage(match.language || 'English');
             setCertificate(match.certificate);
+            setCourseApprovalStatus({ pendingApproval: match.pendingApproval, status: match.status });
             if (match.thumbnail) {
               setThumbnailPreview(match.thumbnail.startsWith('/') ? `http://localhost:5000${match.thumbnail}` : match.thumbnail);
             }
@@ -179,12 +192,13 @@ const CourseForm = () => {
       if (isEditMode) {
         const res = await instructorService.updateCourse(courseId, formData);
         if (res.data?.success) {
-          toast.success('Course details updated successfully!');
+          toast.success('Changes submitted for admin approval!');
+          setCourseApprovalStatus((p) => ({ ...p, pendingApproval: true }));
         }
       } else {
         const res = await instructorService.createCourse(formData);
         if (res.data?.success) {
-          toast.success('Course created! Now you can design the syllabus.');
+          toast.success('Course created! Now build the syllabus and submit for approval.');
           navigate(`/instructor/courses/${res.data.data.course.id}/edit`);
         }
       }
@@ -193,6 +207,58 @@ const CourseForm = () => {
       toast.error(err.response?.data?.message || 'Failed to save course details.');
     } finally {
       setSavingCourse(false);
+    }
+  };
+
+  const handleSubmitForApproval = async () => {
+    setSubmittingApproval(true);
+    try {
+      await instructorService.submitForApproval(courseId);
+      toast.success('Course submitted to admin for review!');
+      setCourseApprovalStatus({ pendingApproval: true, status: 'DRAFT' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit for approval.');
+    } finally {
+      setSubmittingApproval(false);
+    }
+  };
+
+  const fetchResources = async (cId) => {
+    try {
+      const res = await resourceService.getByCourse(cId);
+      if (res.data?.data?.resources) setResources(res.data.data.resources);
+    } catch (_) {
+      // ignore
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setUploadingFiles(true);
+    try {
+      const formData = new FormData();
+      files.forEach((f) => formData.append('files', f));
+      const res = await resourceService.upload(courseId, formData);
+      if (res.data?.success) {
+        toast.success(`${files.length} file(s) uploaded!`);
+        fetchResources(courseId);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'File upload failed.');
+    } finally {
+      setUploadingFiles(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleDeleteResource = async (id) => {
+    try {
+      await resourceService.delete(id);
+      toast.success('File removed.');
+      setResources((r) => r.filter((x) => x.id !== id));
+    } catch (err) {
+      toast.error('Failed to delete file.');
     }
   };
 
@@ -368,6 +434,43 @@ const CourseForm = () => {
         </div>
       </div>
 
+      {/* Approval Status Banner */}
+      {isEditMode && (
+        <div className={`rounded-xl px-4 py-3 flex items-center justify-between gap-4 text-sm ${
+          courseApprovalStatus.status === 'PUBLISHED'
+            ? 'bg-green-50 border border-green-100 text-green-700'
+            : courseApprovalStatus.pendingApproval
+            ? 'bg-amber-50 border border-amber-100 text-amber-700'
+            : 'bg-slate-50 border border-slate-100 text-slate-600'
+        }`}>
+          <div className="flex items-center gap-2">
+            {courseApprovalStatus.status === 'PUBLISHED' ? (
+              <IoCheckmarkCircleOutline size={18} />
+            ) : courseApprovalStatus.pendingApproval ? (
+              <IoTimeOutline size={18} />
+            ) : (
+              <IoDocumentOutline size={18} />
+            )}
+            <span className="font-semibold text-xs">
+              {courseApprovalStatus.status === 'PUBLISHED'
+                ? 'This course is live and visible to students.'
+                : courseApprovalStatus.pendingApproval
+                ? 'Pending admin approval — changes will go live once approved.'
+                : 'This course is a draft. Submit for admin review to publish.'}
+            </span>
+          </div>
+          {!courseApprovalStatus.pendingApproval && courseApprovalStatus.status !== 'PUBLISHED' && (
+            <button
+              onClick={handleSubmitForApproval}
+              disabled={submittingApproval}
+              className="shrink-0 px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg transition-all disabled:opacity-50 cursor-pointer"
+            >
+              {submittingApproval ? 'Submitting...' : 'Submit for Approval'}
+            </button>
+          )}
+        </div>
+      )}
+
       {isEditMode && (
         <div className="flex border-b border-slate-100 pb-px gap-1">
           <button
@@ -391,14 +494,24 @@ const CourseForm = () => {
             <IoLayersOutline className="inline mr-1" /> Syllabus Builder ({modules.length})
           </button>
           <button
-            onClick={() => setActiveTab('ZOOM')}
+            onClick={() => { setActiveTab('ZOOM'); }}
             className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeTab === 'ZOOM'
                 ? 'border-primary-600 text-primary-700 font-bold'
                 : 'border-transparent text-slate-400 hover:text-slate-600'
             }`}
           >
-            <IoVideocamOutline className="inline mr-1" /> Live Zoom Classes
+            <IoVideocamOutline className="inline mr-1" /> Live Classes
+          </button>
+          <button
+            onClick={() => { setActiveTab('RESOURCES'); fetchResources(courseId); }}
+            className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
+              activeTab === 'RESOURCES'
+                ? 'border-primary-600 text-primary-700 font-bold'
+                : 'border-transparent text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            <IoCloudUploadOutline className="inline mr-1" /> Files ({resources.length})
           </button>
         </div>
       )}
@@ -915,7 +1028,91 @@ const CourseForm = () => {
           </Card>
         </div>
       )}
+
+      {/* Tab 4: RESOURCES */}
+      {isEditMode && activeTab === 'RESOURCES' && (
+        <div className="space-y-6 animate-fade-in-up">
+          <Card hover={false} className="bg-white border border-slate-100 p-6 rounded-2xl space-y-6">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-50">
+              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <IoCloudUploadOutline size={18} className="text-primary-700" /> Course Materials
+              </h3>
+              <div>
+                <input
+                  type="file"
+                  id="course-files-upload"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileUpload}
+                  disabled={uploadingFiles}
+                />
+                <label
+                  htmlFor="course-files-upload"
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all ${
+                    uploadingFiles
+                      ? 'bg-slate-100 text-slate-400'
+                      : 'bg-primary-600 hover:bg-primary-700 text-white'
+                  }`}
+                >
+                  <IoCloudUploadOutline size={14} />
+                  {uploadingFiles ? 'Uploading...' : 'Upload Files'}
+                </label>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Upload any course-related files (PDFs, slides, documents, spreadsheets, zip files, etc.). Enrolled students will be able to download these.
+            </p>
+
+            {resources.length === 0 ? (
+              <div className="text-center py-16 text-slate-400">
+                <IoCloudUploadOutline size={40} className="mx-auto mb-3 opacity-40" />
+                <p className="text-sm font-medium">No files uploaded yet.</p>
+                <p className="text-xs mt-1">Click "Upload Files" above to add course materials.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {resources.map((resource) => (
+                  <div
+                    key={resource.id}
+                    className="flex items-center justify-between p-3.5 border border-slate-100 rounded-xl bg-slate-50/30 hover:border-primary-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-2 bg-primary-50 rounded-lg shrink-0">
+                        <IoDocumentOutline size={16} className="text-primary-700" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate">{resource.name}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          {resource.fileType} · {resource.fileSize ? `${(resource.fileSize / 1024).toFixed(1)} KB` : '—'} · {new Date(resource.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={`http://localhost:5000${resource.fileUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[10px] font-bold text-primary-600 hover:text-primary-700 px-2 py-1 rounded-lg hover:bg-primary-50 transition-all"
+                      >
+                        Download
+                      </a>
+                      <button
+                        onClick={() => handleDeleteResource(resource.id)}
+                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg cursor-pointer transition-all"
+                      >
+                        <IoTrashOutline size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
     </div>
+
   );
 };
 

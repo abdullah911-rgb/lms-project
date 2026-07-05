@@ -28,6 +28,10 @@ export const ROUTES = {
 
   // Admin Portal
   ADMIN_DASHBOARD: '/admin/dashboard',
+  ADMIN_COURSES: '/admin/courses',
+  ADMIN_USERS: '/admin/users',
+  ADMIN_APPROVALS: '/admin/approvals',
+  ADMIN_ENROLLMENTS: '/admin/enrollments',
 };
 
 export const ROLES = {

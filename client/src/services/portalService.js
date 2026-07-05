@@ -58,15 +58,32 @@ export const instructorService = {
   createCourse: (formData) =>
     api.post('/courses', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 
-  // Update course
+  // Update course (submits for approval if instructor)
   updateCourse: (courseId, formData) =>
     api.put(`/courses/${courseId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+
+  // Submit a new course for admin approval
+  submitForApproval: (courseId) => api.patch(`/courses/${courseId}/submit-approval`),
 
   // Delete (archive) course
   deleteCourse: (courseId) => api.delete(`/courses/${courseId}`),
 
   // Get categories
   getCategories: () => api.get('/categories'),
+};
+
+export const resourceService = {
+  // Upload files for a course
+  upload: (courseId, formData) =>
+    api.post(`/resources/course/${courseId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
+  // Get all resources for a course
+  getByCourse: (courseId) => api.get(`/resources/course/${courseId}`),
+
+  // Delete a resource
+  delete: (id) => api.delete(`/resources/${id}`),
 };
 
 export const zoomService = {
@@ -76,4 +93,25 @@ export const zoomService = {
   create: (courseId, data) => api.post(`/zoom/course/${courseId}`, data),
   // End a live class
   endClass: (meetingId) => api.delete(`/zoom/${meetingId}`),
+};
+
+export const adminService = {
+  // Platform stats
+  getStats: () => api.get('/admin/stats'),
+
+  // Users
+  getUsers: (params) => api.get('/admin/users', { params }),
+  toggleUserActive: (userId) => api.patch(`/admin/users/${userId}/toggle-active`),
+  changeUserRole: (userId, role) => api.patch(`/admin/users/${userId}/role`, { role }),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
+
+  // Courses
+  getAllCourses: (params) => api.get('/admin/courses', { params }),
+  getPendingCourses: () => api.get('/courses/admin/pending'),
+  approveCourse: (courseId) => api.patch(`/courses/${courseId}/approve`),
+  rejectCourse: (courseId, reason) => api.patch(`/courses/${courseId}/reject`, { reason }),
+  togglePublish: (courseId) => api.patch(`/courses/${courseId}/publish`),
+
+  // Enrollments
+  getRecentEnrollments: () => api.get('/admin/enrollments'),
 };

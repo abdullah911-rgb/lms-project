@@ -9,16 +9,22 @@ const { uploadImage } = require('../middlewares/upload');
 // Public routes
 router.get('/stats', courseController.getStats);
 router.get('/featured', courseController.getFeatured);
-router.get('/', optionalAuth, courseController.getAll);
-router.get('/:slug', optionalAuth, courseController.getOne);
+
+// Admin routes (before /:id to avoid slug conflicts)
+router.get('/admin/pending', requireAuth, requireRole('ADMIN'), courseController.getPendingApproval);
+router.patch('/:id/approve', requireAuth, requireRole('ADMIN'), courseController.approveCourse);
+router.patch('/:id/reject', requireAuth, requireRole('ADMIN'), courseController.rejectCourse);
+router.patch('/:id/publish', requireAuth, requireRole('ADMIN'), courseController.togglePublish);
 
 // Instructor routes
 router.get('/instructor/my-courses', requireAuth, requireRole('INSTRUCTOR', 'ADMIN'), courseController.getInstructorCourses);
+router.patch('/:id/submit-approval', requireAuth, requireRole('INSTRUCTOR'), courseController.submitForApproval);
 router.post('/', requireAuth, requireRole('INSTRUCTOR', 'ADMIN'), uploadImage.single('thumbnail'), courseController.create);
 router.put('/:id', requireAuth, requireRole('INSTRUCTOR', 'ADMIN'), uploadImage.single('thumbnail'), courseController.update);
 router.delete('/:id', requireAuth, requireRole('INSTRUCTOR', 'ADMIN'), courseController.delete);
 
-// Admin only
-router.patch('/:id/publish', requireAuth, requireRole('ADMIN'), courseController.togglePublish);
+// Public listing and detail (must come AFTER specific named routes)
+router.get('/', optionalAuth, courseController.getAll);
+router.get('/:slug', optionalAuth, courseController.getOne);
 
 module.exports = router;
