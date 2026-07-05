@@ -9,7 +9,7 @@ import {
   IoChevronBackOutline, 
   IoBookOutline, 
   IoLayersOutline, 
-  IoPlusOutline, 
+  IoAddOutline, 
   IoTrashOutline,
   IoSettingsOutline, 
   IoDocumentTextOutline,
@@ -587,7 +587,7 @@ const CourseForm = () => {
                   <IoLayersOutline size={18} className="text-primary-700" /> Syllabus Modules
                 </h3>
                 <Button variant="primary" size="sm" onClick={() => { setEditingModuleId(null); setModuleTitle(''); setModuleDesc(''); setShowModuleForm(true); }}>
-                  <IoPlusOutline size={16} className="inline mr-1" /> Add Module
+                  <IoAddOutline size={16} className="inline mr-1" /> Add Module
                 </Button>
               </div>
 
@@ -622,7 +622,7 @@ const CourseForm = () => {
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Lectures & Guides</span>
                           <button onClick={() => handleAddLessonSetup(mod.id)} className="text-[10px] font-bold text-accent-600 hover:text-accent-700 flex items-center gap-0.5">
-                            <IoPlusOutline size={14} /> Add Lecture
+                            <IoAddOutline size={14} /> Add Lecture
                           </button>
                         </div>
 

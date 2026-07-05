@@ -4,7 +4,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { instructorService } from '../../services/portalService';
 import { ROUTES } from '../../constants';
-import { IoPlusOutline, IoCreateOutline, IoTrashOutline, IoPeopleOutline, IoLayersOutline } from 'react-icons/io5';
+import { IoAddOutline, IoCreateOutline, IoTrashOutline, IoPeopleOutline, IoLayersOutline } from 'react-icons/io5';
 import toast from 'react-hot-toast';
 
 const InstructorCourses = () => {
@@ -60,7 +60,7 @@ const InstructorCourses = () => {
         </div>
         <Link to={ROUTES.INSTRUCTOR_COURSE_NEW}>
           <Button variant="primary" size="md" className="flex items-center gap-1.5">
-            <IoPlusOutline size={18} />
+            <IoAddOutline size={18} />
             <span>Create Course</span>
           </Button>
         </Link>

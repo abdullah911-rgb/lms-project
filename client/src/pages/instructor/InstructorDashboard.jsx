@@ -4,7 +4,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { instructorService } from '../../services/portalService';
 import { ROUTES } from '../../constants';
-import { IoBookOutline, IoPeopleOutline, IoLayersOutline, IoPlusOutline, IoEyeOutline } from 'react-icons/io5';
+import { IoBookOutline, IoPeopleOutline, IoLayersOutline, IoAddOutline, IoEyeOutline } from 'react-icons/io5';
 
 const InstructorDashboard = () => {
   const [courses, setCourses] = useState([]);
@@ -47,7 +47,7 @@ const InstructorDashboard = () => {
         </div>
         <Link to={ROUTES.INSTRUCTOR_COURSE_NEW}>
           <Button variant="primary" size="md" className="flex items-center gap-1.5">
-            <IoPlusOutline size={18} />
+            <IoAddOutline size={18} />
             <span>Create New Course</span>
           </Button>
         </Link>
@@ -142,7 +142,7 @@ const InstructorDashboard = () => {
           <div className="space-y-3">
             <Link to={ROUTES.INSTRUCTOR_COURSE_NEW} className="block w-full">
               <Button variant="primary" size="sm" className="w-full flex items-center justify-center gap-2">
-                <IoPlusOutline size={16} /> Create Course
+                <IoAddOutline size={16} /> Create Course
               </Button>
             </Link>
             <Link to={ROUTES.INSTRUCTOR_COURSES} className="block w-full">
