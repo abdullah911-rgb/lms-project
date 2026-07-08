@@ -159,6 +159,65 @@ const emailTemplates = {
     `,
     text: `Welcome ${name}! Your account is verified. Start learning at ${config.clientUrl}`,
   }),
+
+  classReminder: ({ studentName, topic, courseName, instructorName, startTime, minutesUntil, courseId }) => ({
+    subject: `⏰ ${minutesUntil === 10 ? 'Starting Soon!' : 'Reminder:'} Live Class in ${minutesUntil} minutes — ${topic}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+      <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:40px 0;">
+          <tr><td align="center">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+              <tr>
+                <td style="background:linear-gradient(135deg,#dc2626,#ef4444);padding:32px;text-align:center;">
+                  <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">🔴 Live Class Starting in ${minutesUntil} Minutes!</h1>
+                  <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:14px;">${topic}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:36px 48px;">
+                  <h2 style="color:#1e293b;margin:0 0 16px;font-size:18px;">Hi ${studentName},</h2>
+                  <p style="color:#64748b;font-size:15px;line-height:1.6;margin:0 0 24px;">
+                    Your live class is starting soon! Don't miss it.
+                  </p>
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:10px;padding:20px;margin:0 0 24px;">
+                    <tr><td style="padding:6px 0;">
+                      <span style="color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Course</span><br>
+                      <span style="color:#1e293b;font-size:15px;font-weight:700;">${courseName}</span>
+                    </td></tr>
+                    <tr><td style="padding:6px 0;">
+                      <span style="color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Topic</span><br>
+                      <span style="color:#1e293b;font-size:15px;">${topic}</span>
+                    </td></tr>
+                    <tr><td style="padding:6px 0;">
+                      <span style="color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Instructor</span><br>
+                      <span style="color:#1e293b;font-size:15px;">${instructorName}</span>
+                    </td></tr>
+                    <tr><td style="padding:6px 0;">
+                      <span style="color:#64748b;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Start Time</span><br>
+                      <span style="color:#1e293b;font-size:15px;">${new Date(startTime).toLocaleString('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'full', timeStyle: 'short' })}</span>
+                    </td></tr>
+                  </table>
+                  <div style="text-align:center;">
+                    <a href="${config.clientUrl}/student/course/${courseId}" style="display:inline-block;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:700;font-size:15px;">Join Live Class Now</a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="background:#f8fafc;padding:20px 48px;border-top:1px solid #e2e8f0;">
+                  <p style="color:#94a3b8;font-size:12px;margin:0;text-align:center;">© 2024 LMS Platform. All rights reserved.</p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </body>
+      </html>
+    `,
+    text: `Hi ${studentName}, your live class "${topic}" for ${courseName} starts in ${minutesUntil} minutes. Join at: ${config.clientUrl}/student/course/${courseId}`,
+  }),
 };
 
 module.exports = { sendEmail, emailTemplates };

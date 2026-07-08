@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../constants';
-import { IoLogOutOutline, IoHomeOutline, IoBookOutline, IoPeopleOutline, IoPersonOutline } from 'react-icons/io5';
+import { IoLogOutOutline, IoHomeOutline, IoBookOutline, IoPeopleOutline, IoPersonOutline, IoCalendarOutline } from 'react-icons/io5';
 import AnnouncementBanner from '../common/AnnouncementBanner';
 
 const InstructorLayout = () => {
@@ -15,6 +15,7 @@ const InstructorLayout = () => {
   const navItems = [
     { to: ROUTES.INSTRUCTOR_DASHBOARD, label: 'Dashboard', icon: <IoHomeOutline size={18} /> },
     { to: ROUTES.INSTRUCTOR_COURSES, label: 'Manage Courses', icon: <IoBookOutline size={18} /> },
+    { to: ROUTES.INSTRUCTOR_CALENDAR, label: 'Class Calendar', icon: <IoCalendarOutline size={18} /> },
     { to: ROUTES.INSTRUCTOR_STUDENTS, label: 'View Students', icon: <IoPeopleOutline size={18} /> },
     { to: ROUTES.INSTRUCTOR_PROFILE, label: 'Profile Settings', icon: <IoPersonOutline size={18} /> },
   ];

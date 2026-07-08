@@ -32,12 +32,14 @@ import StudentDashboard from './pages/student/StudentDashboard';
 import MyCourses from './pages/student/MyCourses';
 import StudentCourseView from './pages/student/StudentCourseView';
 import StudentProfile from './pages/student/StudentProfile';
+import StudentCalendar from './pages/student/StudentCalendar';
 
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import InstructorCourses from './pages/instructor/InstructorCourses';
 import CourseForm from './pages/instructor/CourseForm';
 import InstructorStudents from './pages/instructor/InstructorStudents';
 import InstructorProfile from './pages/instructor/InstructorProfile';
+import InstructorCalendar from './pages/instructor/InstructorCalendar';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminApprovals from './pages/admin/AdminApprovals';
@@ -46,6 +48,9 @@ import AdminCourses from './pages/admin/AdminCourses';
 import AdminEnrollments from './pages/admin/AdminEnrollments';
 import AdminInstructors from './pages/admin/AdminInstructors';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
+
+// Zoom Classroom
+import ZoomClassroom from './pages/ZoomClassroom';
 
 function App() {
   return (
@@ -104,6 +109,7 @@ function App() {
             <Route path="my-courses" element={<MyCourses />} />
             <Route path="course/:courseId" element={<StudentCourseView />} />
             <Route path="profile" element={<StudentProfile />} />
+            <Route path="calendar" element={<StudentCalendar />} />
           </Route>
 
           {/* Instructor Dashboard Layout */}
@@ -122,6 +128,7 @@ function App() {
             <Route path="courses/:courseId/edit" element={<CourseForm />} />
             <Route path="students" element={<InstructorStudents />} />
             <Route path="profile" element={<InstructorProfile />} />
+            <Route path="calendar" element={<InstructorCalendar />} />
           </Route>
 
           {/* Admin Dashboard Layout */}
@@ -142,6 +149,16 @@ function App() {
             <Route path="instructors" element={<AdminInstructors />} />
             <Route path="announcements" element={<AdminAnnouncements />} />
           </Route>
+
+          {/* Zoom In-Browser Classroom — accessible to all authenticated roles */}
+          <Route
+            path="/zoom-classroom/:meetingId"
+            element={
+              <ProtectedRoute allowedRoles={[ROLES.STUDENT, ROLES.INSTRUCTOR, ROLES.ADMIN]}>
+                <ZoomClassroom />
+              </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </AuthProvider>

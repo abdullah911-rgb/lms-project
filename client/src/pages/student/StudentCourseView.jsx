@@ -296,8 +296,14 @@ const StudentCourseView = () => {
                       {course.zoomMeetings.map((meeting) => (
                         <div key={meeting.id} className="p-4 border border-slate-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white hover:border-primary-100">
                           <div className="space-y-1">
-                            <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-primary-100 text-primary-800 px-2 py-0.5 rounded-full">
-                              {meeting.status}
+                            <span className={`inline-block text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full ${
+                              meeting.status === 'LIVE'
+                                ? 'bg-red-100 text-red-700'
+                                : meeting.status === 'SCHEDULED'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-slate-100 text-slate-500'
+                            }`}>
+                              {meeting.status === 'LIVE' ? '🔴 LIVE' : meeting.status}
                             </span>
                             <h4 className="text-sm font-bold text-slate-800">{meeting.topic}</h4>
                             <p className="text-[11px] text-slate-500">
@@ -305,11 +311,18 @@ const StudentCourseView = () => {
                             </p>
                             {meeting.agenda && <p className="text-xs text-slate-400 mt-1">{meeting.agenda}</p>}
                           </div>
-                          <a href={meeting.joinUrl} target="_blank" rel="noreferrer">
-                            <Button variant="primary" size="sm" className="flex items-center gap-2">
-                              <IoVideocamOutline size={16} /> Join Zoom Class
+                          {meeting.status === 'LIVE' ? (
+                            <Link to={`/zoom-classroom/${meeting.meetingId}?courseId=${course.id}`}>
+                              <Button variant="primary" size="sm" className="flex items-center gap-2">
+                                <IoVideocamOutline size={16} /> Join Live Class
+                              </Button>
+                            </Link>
+                          ) : (
+                            <Button variant="secondary" size="sm" disabled className="flex items-center gap-2 opacity-50 cursor-not-allowed">
+                              <IoVideocamOutline size={16} />
+                              {meeting.status === 'ENDED' ? 'Class Ended' : 'Not Live Yet'}
                             </Button>
-                          </a>
+                          )}
                         </div>
                       ))}
                     </div>

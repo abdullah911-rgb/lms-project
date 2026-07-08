@@ -89,10 +89,17 @@ export const resourceService = {
 export const zoomService = {
   // Get meetings for a course
   getByCourse: (courseId) => api.get(`/zoom/course/${courseId}`),
-  // Create a live class
+  // Create a live class (instructor/admin)
   create: (courseId, data) => api.post(`/zoom/course/${courseId}`, data),
-  // End a live class
+  // End a live class (instructor/admin)
   endClass: (meetingId) => api.delete(`/zoom/${meetingId}`),
+  // Get SDK signature for in-browser classroom (role: 0=attendee, 1=host)
+  getSignature: (meetingId, role = 0) => api.post(`/zoom/${meetingId}/signature`, { role }),
+  // Attendance tracking
+  joinAttendance: (meetingId) => api.post(`/zoom/${meetingId}/attendance/join`),
+  leaveAttendance: (meetingId) => api.post(`/zoom/${meetingId}/attendance/leave`),
+  // Get calendar meetings
+  getCalendar: () => api.get('/zoom/calendar'),
 };
 
 export const adminService = {

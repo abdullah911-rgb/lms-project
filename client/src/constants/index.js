@@ -17,6 +17,7 @@ export const ROUTES = {
   STUDENT_MY_COURSES: '/student/my-courses',
   STUDENT_COURSE_VIEW: '/student/course/:courseId',
   STUDENT_PROFILE: '/student/profile',
+  STUDENT_CALENDAR: '/student/calendar',
 
   // Instructor Portal
   INSTRUCTOR_DASHBOARD: '/instructor/dashboard',
@@ -25,6 +26,7 @@ export const ROUTES = {
   INSTRUCTOR_COURSE_EDIT: '/instructor/courses/:courseId/edit',
   INSTRUCTOR_STUDENTS: '/instructor/students',
   INSTRUCTOR_PROFILE: '/instructor/profile',
+  INSTRUCTOR_CALENDAR: '/instructor/calendar',
 
   // Admin Portal
   ADMIN_DASHBOARD: '/admin/dashboard',

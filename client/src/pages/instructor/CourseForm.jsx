@@ -53,6 +53,7 @@ const CourseForm = () => {
   const [zoomTopic, setZoomTopic] = useState('');
   const [zoomAgenda, setZoomAgenda] = useState('');
   const [zoomDuration, setZoomDuration] = useState('60');
+  const [zoomStartTime, setZoomStartTime] = useState('');
   const [startingClass, setStartingClass] = useState(false);
 
   // Course approval state
@@ -383,17 +384,30 @@ const CourseForm = () => {
     e.preventDefault();
     setStartingClass(true);
     try {
-      const res = await zoomService.create(courseId, {
+      const payload = {
         topic: zoomTopic || `${title} - Live Class`,
         agenda: zoomAgenda,
         duration: zoomDuration
-      });
+      };
+      if (zoomStartTime) {
+        payload.startTime = new Date(zoomStartTime).toISOString();
+      }
+
+      const res = await zoomService.create(courseId, payload);
       if (res.data?.success) {
-        toast.success('Live class started successfully! Students have been notified.');
+        const newMeeting = res.data.data.meeting;
         setZoomTopic('');
         setZoomAgenda('');
         setZoomDuration('60');
-        fetchMeetings(courseId);
+        setZoomStartTime('');
+        
+        if (newMeeting.status === 'LIVE') {
+          toast.success('Live class started! Entering classroom…');
+          navigate(`/zoom-classroom/${newMeeting.meetingId}?courseId=${courseId}`);
+        } else {
+          toast.success('Live class scheduled successfully!');
+          fetchMeetings(courseId);
+        }
       }
     } catch (err) {
       console.error('Error starting live class:', err);
@@ -958,6 +972,18 @@ const CourseForm = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-505 uppercase tracking-wider block">Scheduled Start Time (Optional)</label>
+                    <input
+                      type="datetime-local"
+                      value={zoomStartTime}
+                      onChange={(e) => setZoomStartTime(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-100 focus:outline-none focus:border-primary-600 text-sm"
+                    />
+                    <p className="text-[10px] text-slate-400">Leave blank to start immediately.</p>
+                  </div>
+
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-505 uppercase tracking-wider block">Duration (Minutes)</label>
                     <input
@@ -970,11 +996,16 @@ const CourseForm = () => {
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-100 focus:outline-none focus:border-primary-600 text-sm"
                     />
                   </div>
-                  <div className="flex items-end">
-                    <Button type="submit" variant="primary" size="md" className="w-full" disabled={startingClass}>
-                      {startingClass ? 'Starting Class...' : 'Start Live Class Now'}
-                    </Button>
-                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Button type="submit" variant="primary" size="md" className="w-full justify-center" disabled={startingClass}>
+                    {startingClass 
+                      ? 'Processing...' 
+                      : zoomStartTime 
+                      ? 'Schedule Live Class' 
+                      : 'Start Live Class Now'}
+                  </Button>
                 </div>
               </form>
             </Card>
@@ -1015,10 +1046,18 @@ const CourseForm = () => {
 
                     {meeting.status === 'LIVE' && (
                       <div className="flex gap-2 pt-1">
-                        <a href={meeting.joinUrl} target="_blank" rel="noreferrer" className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full text-[10px] py-1 cursor-pointer">Join</Button>
-                        </a>
+                        <Link to={`/zoom-classroom/${meeting.meetingId}?courseId=${courseId}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full text-[10px] py-1 cursor-pointer">Enter Classroom</Button>
+                        </Link>
                         <Button variant="secondary" size="sm" className="flex-1 text-[10px] py-1 text-red-600 hover:text-red-700 cursor-pointer" onClick={() => handleEndLiveClass(meeting.id)}>End</Button>
+                      </div>
+                    )}
+
+                    {meeting.status === 'SCHEDULED' && (
+                      <div className="flex gap-2 pt-1">
+                        <Link to={`/zoom-classroom/${meeting.meetingId}?courseId=${courseId}`} className="flex-1">
+                          <Button variant="primary" size="sm" className="w-full text-[10px] py-1 cursor-pointer">Start Class</Button>
+                        </Link>
                       </div>
                     )}
                   </div>
