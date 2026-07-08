@@ -11,7 +11,8 @@ import {
   IoRibbonOutline, 
   IoVideocamOutline,
   IoArrowForwardOutline,
-  IoCheckmarkCircleSharp
+  IoCheckmarkCircleSharp,
+  IoCloseOutline,
 } from 'react-icons/io5';
 
 const HomePage = () => {
@@ -24,6 +25,7 @@ const HomePage = () => {
 
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [adDismissed, setAdDismissed] = useState(false);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -131,11 +133,21 @@ const HomePage = () => {
                 </div>
 
                 {/* Main Illustration placeholder (elegant graphic block) */}
-                <div className="w-4/5 h-4/5 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-500 shadow-lg text-white flex flex-col justify-end p-8 relative">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),transparent)]"></div>
-                  <h3 className="text-2xl font-heading font-extrabold tracking-tight relative z-10">Expand Your Learning Envelope</h3>
-                  <p className="text-sm text-primary-100 mt-2 relative z-10 font-light">Interactive platform with live mentoring, downloadable slides, and automated quiz modules.</p>
-                </div>
+                {!adDismissed && (
+                  <div className="w-4/5 h-4/5 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-500 shadow-lg text-white flex flex-col justify-end p-8 relative">
+                    <button
+                      type="button"
+                      onClick={() => setAdDismissed(true)}
+                      className="absolute top-3 right-3 z-20 p-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors cursor-pointer"
+                      aria-label="Dismiss"
+                    >
+                      <IoCloseOutline size={20} />
+                    </button>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),transparent)]"></div>
+                    <h3 className="text-2xl font-heading font-extrabold tracking-tight relative z-10">Expand Your Learning Envelope</h3>
+                    <p className="text-sm text-primary-100 mt-2 relative z-10 font-light">Interactive platform with live mentoring, downloadable slides, and automated quiz modules.</p>
+                  </div>
+                )}
               </div>
             </motion.div>
 

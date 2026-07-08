@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../constants';
+import { getPostLoginPath } from '../../utils/authRedirect';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -13,21 +14,13 @@ const LoginPage = () => {
   const location = useLocation();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
 
-  // Redirect target after login
   const from = location.state?.from?.pathname || null;
 
   const onSubmit = async (data) => {
     try {
       const user = await login(data.email, data.password);
-      
-      // Redirect based on role unless redirect location provided
-      if (from) {
-        navigate(from, { replace: true });
-      } else {
-        if (user.role === 'ADMIN') navigate(ROUTES.ADMIN_DASHBOARD, { replace: true });
-        else if (user.role === 'INSTRUCTOR') navigate(ROUTES.INSTRUCTOR_DASHBOARD, { replace: true });
-        else navigate(ROUTES.STUDENT_DASHBOARD, { replace: true });
-      }
+      const destination = getPostLoginPath(user.role, from);
+      navigate(destination, { replace: true, state: null });
     } catch (err) {
       // Handled by AuthContext toast notification
     }

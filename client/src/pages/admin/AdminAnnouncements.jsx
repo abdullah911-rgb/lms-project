@@ -164,7 +164,7 @@ const AdminAnnouncements = () => {
       <div>
         <Card hover={false} className="bg-white border border-slate-100 p-6 rounded-2xl space-y-4 sticky top-6">
           <h3 className="text-sm font-bold text-slate-800 pb-2 border-b border-slate-50 flex items-center gap-2">
-            <IoMegaphoneOutline size={18} className="text-red-550 text-red-600" /> New Broadcast
+            <IoMegaphoneOutline size={18} className="text-accent-500" /> New Broadcast
           </h3>
 
           <form onSubmit={handleCreate} className="space-y-4">
@@ -173,7 +173,7 @@ const AdminAnnouncements = () => {
               <input
                 type="text"
                 required
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-100 bg-slate-50/50 focus:outline-none focus:bg-white focus:border-red-400"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-100 bg-slate-50/50 focus:outline-none focus:bg-white focus:border-accent-400"
                 placeholder="e.g. System Maintenance"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -185,7 +185,7 @@ const AdminAnnouncements = () => {
               <textarea
                 required
                 rows={5}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-100 bg-slate-50/50 focus:outline-none focus:bg-white focus:border-red-400 resize-none leading-relaxed"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-100 bg-slate-50/50 focus:outline-none focus:bg-white focus:border-accent-400 resize-none leading-relaxed"
                 placeholder="Write your broadcast statement..."
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
@@ -196,7 +196,7 @@ const AdminAnnouncements = () => {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-550 text-slate-500 uppercase tracking-wider block">Severity</label>
                 <select
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-100 bg-white focus:outline-none focus:border-red-400"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-100 bg-white focus:outline-none focus:border-accent-400"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                 >
@@ -210,14 +210,14 @@ const AdminAnnouncements = () => {
                 <label className="text-xs font-bold text-slate-550 text-slate-500 uppercase tracking-wider block">Expiry (Optional)</label>
                 <input
                   type="date"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-100 bg-white focus:outline-none focus:border-red-400"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-100 bg-white focus:outline-none focus:border-accent-400"
                   value={expiresAt}
                   onChange={(e) => setExpiresAt(e.target.value)}
                 />
               </div>
             </div>
 
-            <Button type="submit" variant="primary" size="md" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer py-2.5" disabled={creating}>
+            <Button type="submit" variant="primary" size="md" className="w-full !bg-[#C9A227] hover:!bg-accent-600 !text-primary-950 font-bold cursor-pointer py-2.5 shadow-md shadow-accent-500/20" disabled={creating}>
               {creating ? 'Sending...' : 'Broadcast Now'}
             </Button>
           </form>

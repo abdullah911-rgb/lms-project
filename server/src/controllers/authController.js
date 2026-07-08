@@ -27,6 +27,10 @@ const authController = {
   // POST /api/auth/login
   login: asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+    const existingRefreshToken = req.cookies?.refreshToken;
+    if (existingRefreshToken) {
+      await authService.logout(existingRefreshToken, res);
+    }
     const data = await authService.login({ email, password }, res);
     sendSuccess(res, 'Login successful.', data);
   }),

@@ -12,6 +12,7 @@ import AdminLayout from './components/layouts/AdminLayout';
 
 // Protected Route Guard
 import ProtectedRoute from './components/common/ProtectedRoute';
+import AuthPortalGuard from './components/common/AuthPortalGuard';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -50,6 +51,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <AuthPortalGuard />
         {/* React Toast Alerts */}
         <Toaster 
           position="top-right"

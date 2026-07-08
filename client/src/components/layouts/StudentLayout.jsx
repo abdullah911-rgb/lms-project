@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../constants';
 import { IoLogOutOutline, IoHomeOutline, IoBookOutline, IoPersonOutline, IoSchoolOutline } from 'react-icons/io5';
@@ -7,11 +7,9 @@ import AnnouncementBanner from '../common/AnnouncementBanner';
 
 const StudentLayout = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
-    navigate(ROUTES.HOME);
   };
 
   const navItems = [
@@ -51,7 +49,7 @@ const StudentLayout = () => {
           ))}
         </nav>
         <div className="p-4 border-t border-primary-900">
-          <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-red-950/30 text-red-400 text-sm font-medium transition-all cursor-pointer">
+          <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-accent-500/10 text-accent-500 hover:text-accent-400 text-sm font-medium transition-all cursor-pointer">
             <IoLogOutOutline size={18} />
             <span>Sign Out</span>
           </button>

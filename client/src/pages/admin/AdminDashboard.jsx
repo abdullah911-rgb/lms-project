@@ -14,11 +14,11 @@ import {
 } from 'react-icons/io5';
 
 const StatCard = ({ icon, label, value, color, sub }) => (
-  <Card hover={false} className="bg-white border border-slate-100 flex items-center gap-4 p-5">
-    <div className={`p-3.5 rounded-2xl ${color}`}>{icon}</div>
-    <div>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{label}</p>
-      <p className="text-2xl font-heading font-bold text-slate-900 mt-0.5">{value ?? '—'}</p>
+  <Card hover={false} className="bg-white border border-slate-100 flex items-center gap-3 sm:gap-4 p-4 sm:p-5 min-w-0">
+    <div className={`p-3 rounded-2xl shrink-0 ${color}`}>{icon}</div>
+    <div className="min-w-0">
+      <p className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wide leading-tight">{label}</p>
+      <p className="text-xl sm:text-2xl font-heading font-bold text-slate-900 mt-0.5">{value ?? '—'}</p>
       {sub && <p className="text-[10px] text-slate-400 mt-0.5">{sub}</p>}
     </div>
   </Card>
@@ -53,9 +53,9 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8 font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-heading font-bold text-primary-900">Admin Dashboard</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-heading font-bold text-primary-900">Admin Dashboard</h1>
           <p className="text-sm text-slate-500 mt-1">Full platform overview — users, courses, and enrollments.</p>
         </div>
         <button
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           icon={<IoPeopleOutline size={22} />}
           label="Total Users"

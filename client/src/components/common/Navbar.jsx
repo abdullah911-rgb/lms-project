@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../constants';
 import Button from '../ui/Button';
@@ -14,7 +14,6 @@ import {
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
@@ -24,7 +23,6 @@ const Navbar = () => {
   const handleLogout = async () => {
     await logout();
     setProfileDropdownOpen(false);
-    navigate(ROUTES.HOME);
   };
 
   const navLinks = [
@@ -53,15 +51,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 sm:h-20">
           
           {/* Logo */}
-          <Link to={ROUTES.HOME} className="flex items-center gap-3">
+          <Link to={ROUTES.HOME} className="flex items-center">
             <img
-              src="/Logo.jpeg"
-              alt="Swift LMS"
-              className="h-12 w-12 object-contain rounded-lg"
+              src="/Logo1.jpeg"
+              alt="Swift Institute of Safety & Technology"
+              className="h-10 w-10 md:h-16 md:w-16 object-contain"
             />
-            <span className="font-heading font-extrabold text-xl tracking-tight text-primary-700">
-              Swift
-            </span>
           </Link>
 
           {/* Desktop Navigation Links */}

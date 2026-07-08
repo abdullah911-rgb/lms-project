@@ -1,12 +1,18 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { ROUTES } from '../constants';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [postLoginRole, setPostLoginRole] = useState(null);
+
+  const clearPostLoginRole = useCallback(() => setPostLoginRole(null), []);
 
   // Load user profile on startup
   useEffect(() => {
@@ -32,11 +38,13 @@ export const AuthProvider = ({ children }) => {
   // Login handler
   const login = async (email, password) => {
     setLoading(true);
+    setPostLoginRole(null);
     try {
       const { data } = await api.post('/auth/login', { email, password });
       const { accessToken, user: loggedUser } = data.data;
       localStorage.setItem('accessToken', accessToken);
       setUser(loggedUser);
+      setPostLoginRole(loggedUser.role);
       toast.success(data.message || 'Login successful!');
       return loggedUser;
     } catch (err) {
@@ -71,7 +79,6 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.post('/auth/verify-email', { email, otp });
       toast.success(data.message || 'Email verified successfully!');
       if (data.data?.user) {
-        // If login response isn't direct, prompt user to login
         setUser(data.data.user);
       }
       return data.data;
@@ -97,19 +104,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout handler
+  // Logout handler — navigate away from protected routes BEFORE clearing user
+  // so ProtectedRoute doesn't stash a stale `from` path (e.g. /instructor/dashboard).
   const logout = async () => {
     setLoading(true);
+    setPostLoginRole(null);
     try {
       await api.post('/auth/logout');
     } catch (err) {
       console.error('Logout request failed:', err);
-    } finally {
-      localStorage.removeItem('accessToken');
-      setUser(null);
-      setLoading(false);
-      toast.success('Logged out successfully.');
     }
+    localStorage.removeItem('accessToken');
+    navigate(ROUTES.HOME, { replace: true, state: null });
+    setUser(null);
+    setLoading(false);
+    toast.success('Logged out successfully.');
   };
 
   // Forgot password helper
@@ -147,6 +156,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    postLoginRole,
+    clearPostLoginRole,
     login,
     register,
     verifyEmail,
