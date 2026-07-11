@@ -166,7 +166,7 @@ const RegisterPage = () => {
                   required={true}
                   error={otpErrors.otp?.message}
                   maxLength={6}
-                  {...register('otp', { 
+                  {...registerOtp('otp', {
                     required: 'OTP is required',
                     minLength: { value: 6, message: 'OTP must be 6 digits' },
                     pattern: { value: /^[0-9]+$/, message: 'OTP must contain only numbers' }

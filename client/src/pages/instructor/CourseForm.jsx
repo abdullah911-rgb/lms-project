@@ -400,8 +400,11 @@ const CourseForm = () => {
         setZoomAgenda('');
         setZoomDuration('60');
         setZoomStartTime('');
-        
-        if (newMeeting.status === 'LIVE') {
+
+        if (newMeeting.status === 'PENDING_APPROVAL') {
+          toast.success(res.data.message || 'Class request submitted. Awaiting admin approval.');
+          fetchMeetings(courseId);
+        } else if (newMeeting.status === 'LIVE') {
           toast.success('Live class started! Entering classroom…');
           navigate(`/zoom-classroom/${newMeeting.meetingId}?courseId=${courseId}`);
         } else {
@@ -980,7 +983,8 @@ const CourseForm = () => {
                       onChange={(e) => setZoomStartTime(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-100 focus:outline-none focus:border-primary-600 text-sm"
                     />
-                    <p className="text-[10px] text-slate-400">Leave blank to start immediately.</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Leave blank to start immediately.</p>
+                    <p className="text-[10px] text-amber-600 mt-1">Instructor requests require admin approval before the class can start.</p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -1027,14 +1031,23 @@ const CourseForm = () => {
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0">
                         <p className="font-bold text-slate-800 line-clamp-1">{meeting.topic}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">ID: {meeting.meetingId}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          {meeting.meetingId ? `ID: ${meeting.meetingId}` : 'Pending admin approval'}
+                        </p>
+                        {meeting.rejectedNote && (
+                          <p className="text-[10px] text-red-500 mt-0.5">Rejected: {meeting.rejectedNote}</p>
+                        )}
                       </div>
                       <span className={`px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider border shrink-0 ${
                         meeting.status === 'LIVE'
                           ? 'bg-red-50 text-red-700 border-red-100 animate-pulse font-extrabold'
+                          : meeting.status === 'PENDING_APPROVAL'
+                          ? 'bg-amber-50 text-amber-700 border-amber-100'
+                          : meeting.status === 'REJECTED'
+                          ? 'bg-red-50 text-red-600 border-red-100'
                           : 'bg-slate-50 text-slate-400 border-slate-150'
                       }`}>
-                        {meeting.status}
+                        {meeting.status === 'PENDING_APPROVAL' ? 'Awaiting Approval' : meeting.status}
                       </span>
                     </div>
 
@@ -1043,7 +1056,11 @@ const CourseForm = () => {
                       <p>Duration: {meeting.duration} Mins</p>
                     </div>
 
-                    {meeting.status === 'LIVE' && (
+                    {meeting.status === 'PENDING_APPROVAL' && (
+                      <p className="text-[10px] text-amber-600 pt-1">Waiting for admin to approve this class request.</p>
+                    )}
+
+                    {meeting.status === 'LIVE' && meeting.meetingId && (
                       <div className="flex gap-2 pt-1">
                         <Link to={`/zoom-classroom/${meeting.meetingId}?courseId=${courseId}`} className="flex-1">
                           <Button variant="outline" size="sm" className="w-full text-[10px] py-1 cursor-pointer">Enter Classroom</Button>
@@ -1052,7 +1069,7 @@ const CourseForm = () => {
                       </div>
                     )}
 
-                    {meeting.status === 'SCHEDULED' && (
+                    {meeting.status === 'SCHEDULED' && meeting.meetingId && (
                       <div className="flex gap-2 pt-1">
                         <Link to={`/zoom-classroom/${meeting.meetingId}?courseId=${courseId}`} className="flex-1">
                           <Button variant="primary" size="sm" className="w-full text-[10px] py-1 cursor-pointer">Start Class</Button>

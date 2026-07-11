@@ -1,10 +1,15 @@
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { AUTH_SESSION_EXPIRED } from '../services/api';
+import axios from 'axios';
 import toast from 'react-hot-toast';
-import { ROUTES } from '../constants';
+import { API_URL, ROUTES } from '../constants';
 
 const AuthContext = createContext(null);
+
+function isTransientError(err) {
+  return !err.response || err.code === 'ECONNABORTED' || err.message === 'Network Error';
+}
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -14,7 +19,24 @@ export const AuthProvider = ({ children }) => {
 
   const clearPostLoginRole = useCallback(() => setPostLoginRole(null), []);
 
-  // Load user profile on startup
+  const logout = useCallback(async (showToast = true) => {
+    setLoading(true);
+    setPostLoginRole(null);
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout request failed:', err);
+    }
+    localStorage.removeItem('accessToken');
+    navigate(ROUTES.HOME, { replace: true, state: null });
+    setUser(null);
+    setLoading(false);
+    if (showToast) {
+      toast.success('Logged out successfully.');
+    }
+  }, [navigate]);
+
+  // Load user profile on startup — retry refresh before clearing session
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('accessToken');
@@ -22,12 +44,40 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
         return;
       }
+
       try {
         const { data } = await api.get('/auth/me');
         setUser(data.data.user);
       } catch (err) {
-        console.error('Failed to restore auth session:', err);
-        localStorage.removeItem('accessToken');
+        const status = err.response?.status;
+
+        if (isTransientError(err)) {
+          console.warn('Transient error restoring session — keeping token:', err.message);
+        } else if (status === 401) {
+          try {
+            const { data } = await axios.post(
+              `${API_URL}/auth/refresh`,
+              {},
+              { withCredentials: true }
+            );
+            const newToken = data?.data?.accessToken;
+            if (newToken) {
+              localStorage.setItem('accessToken', newToken);
+              const { data: meData } = await api.get('/auth/me');
+              setUser(meData.data.user);
+              setLoading(false);
+              return;
+            }
+          } catch (refreshErr) {
+            if (!isTransientError(refreshErr)) {
+              localStorage.removeItem('accessToken');
+            }
+          }
+        } else if (status && status >= 400 && status < 500) {
+          localStorage.removeItem('accessToken');
+        } else {
+          console.warn('Server error restoring session — keeping token:', err.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -35,7 +85,18 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  // Login handler
+  // Sync React state when interceptor clears an expired session
+  useEffect(() => {
+    const onSessionExpired = () => {
+      setUser(null);
+      setPostLoginRole(null);
+      navigate(ROUTES.LOGIN, { replace: true, state: { from: window.location.pathname } });
+      toast.error('Your session has expired. Please log in again.');
+    };
+    window.addEventListener(AUTH_SESSION_EXPIRED, onSessionExpired);
+    return () => window.removeEventListener(AUTH_SESSION_EXPIRED, onSessionExpired);
+  }, [navigate]);
+
   const login = async (email, password) => {
     setLoading(true);
     setPostLoginRole(null);
@@ -56,7 +117,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register handler
   const register = async (name, email, password, role) => {
     setLoading(true);
     try {
@@ -72,13 +132,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Verify Email (OTP) handler
   const verifyEmail = async (email, otp) => {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/verify-email', { email, otp });
       toast.success(data.message || 'Email verified successfully!');
-      if (data.data?.user) {
+      // Verification alone should not log the visitor into the public site.
+      if (data.data?.user && localStorage.getItem('accessToken')) {
         setUser(data.data.user);
       }
       return data.data;
@@ -91,7 +151,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Resend OTP handler
   const resendOTP = async (email, purpose) => {
     try {
       const { data } = await api.post('/auth/resend-otp', { email, purpose });
@@ -104,24 +163,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout handler — navigate away from protected routes BEFORE clearing user
-  // so ProtectedRoute doesn't stash a stale `from` path (e.g. /instructor/dashboard).
-  const logout = async () => {
-    setLoading(true);
-    setPostLoginRole(null);
-    try {
-      await api.post('/auth/logout');
-    } catch (err) {
-      console.error('Logout request failed:', err);
-    }
-    localStorage.removeItem('accessToken');
-    navigate(ROUTES.HOME, { replace: true, state: null });
-    setUser(null);
-    setLoading(false);
-    toast.success('Logged out successfully.');
-  };
-
-  // Forgot password helper
   const forgotPassword = async (email) => {
     setLoading(true);
     try {
@@ -137,7 +178,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Reset password helper
   const resetPassword = async (email, otp, password) => {
     setLoading(true);
     try {

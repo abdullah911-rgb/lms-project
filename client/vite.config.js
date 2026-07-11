@@ -6,7 +6,12 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ['depraved-salary-cornhusk.ngrok-free.dev']
+    allowedHosts: ['depraved-salary-cornhusk.ngrok-free.dev'],
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+    },
   }
 })
 

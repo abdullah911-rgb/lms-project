@@ -49,10 +49,12 @@ enum EnrollmentStatus {
 }
 
 enum MeetingStatus {
+  PENDING_APPROVAL
   SCHEDULED
   LIVE
   ENDED
   CANCELLED
+  REJECTED
 }
 
 enum AnnouncementTarget {
@@ -391,15 +393,16 @@ model ZoomMeeting {
   id           String        @id @default(uuid())
   courseId     String
   instructorId String
-  meetingId    String        @unique
+  meetingId    String?       @unique
   topic        String
   agenda       String?
   startTime    DateTime
   duration     Int           // Duration in minutes
-  joinUrl      String
+  joinUrl      String?
   startUrl     String?
   password     String?
-  status       MeetingStatus @default(SCHEDULED)
+  status       MeetingStatus @default(PENDING_APPROVAL)
+  rejectedNote String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 

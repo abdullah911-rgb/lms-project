@@ -33,8 +33,9 @@ const config = {
     accountId: process.env.ZOOM_ACCOUNT_ID,
     clientId: process.env.ZOOM_CLIENT_ID,
     clientSecret: process.env.ZOOM_CLIENT_SECRET,
-    sdkKey: process.env.ZOOM_SDK_KEY,
-    sdkSecret: process.env.ZOOM_SDK_SECRET,
+    // Meeting SDK JWT credentials (Client ID + Secret from a Meeting SDK / General app)
+    sdkKey: process.env.ZOOM_SDK_KEY || process.env.ZOOM_CLIENT_ID,
+    sdkSecret: process.env.ZOOM_SDK_SECRET || process.env.ZOOM_CLIENT_SECRET,
   },
 
   upload: {

@@ -100,6 +100,10 @@ export const zoomService = {
   leaveAttendance: (meetingId) => api.post(`/zoom/${meetingId}/attendance/leave`),
   // Get calendar meetings
   getCalendar: () => api.get('/zoom/calendar'),
+  // Admin class approval
+  getPendingApprovals: () => api.get('/zoom/admin/pending'),
+  approveMeeting: (id) => api.patch(`/zoom/${id}/approve`),
+  rejectMeeting: (id, reason) => api.patch(`/zoom/${id}/reject`, { reason }),
 };
 
 export const adminService = {

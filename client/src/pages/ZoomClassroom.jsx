@@ -1,27 +1,24 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import ZoomMtgEmbeddedImport from '@zoom/meetingsdk/embedded';
 import { useAuth } from '../contexts/AuthContext';
 import { zoomService } from '../services/portalService';
+import { API_URL } from '../constants';
+import { getRoleHomePath } from '../utils/authRedirect';
 
-/**
- * Loads the Zoom Meeting SDK script dynamically and returns a promise
- * that resolves when the global ZoomMtgEmbedded is available.
- */
-function loadZoomSDK() {
-  return new Promise((resolve, reject) => {
-    if (window.ZoomMtgEmbedded) return resolve(window.ZoomMtgEmbedded);
+function getZoomEmbedded() {
+  const mod = ZoomMtgEmbeddedImport;
+  if (typeof mod?.createClient === 'function') return mod;
+  if (typeof mod?.default?.createClient === 'function') return mod.default;
+  throw new Error('Zoom SDK could not be initialized. Please refresh and try again.');
+}
 
-    // Use the latest stable Component View SDK
-    const script = document.createElement('script');
-    script.src = 'https://source.zoom.us/3.9.5/zoom-meeting-embedded.min.js';
-    script.async = true;
-    script.onload = () => {
-      if (window.ZoomMtgEmbedded) resolve(window.ZoomMtgEmbedded);
-      else reject(new Error('Zoom SDK loaded but ZoomMtgEmbedded not found.'));
-    };
-    script.onerror = () => reject(new Error('Failed to load Zoom SDK script.'));
-    document.head.appendChild(script);
-  });
+function getBackPath(role, courseId) {
+  if (courseId) {
+    if (role === 'STUDENT') return `/student/course/${courseId}`;
+    if (role === 'INSTRUCTOR' || role === 'ADMIN') return `/instructor/courses/${courseId}/edit`;
+  }
+  return getRoleHomePath(role);
 }
 
 export default function ZoomClassroom() {
@@ -34,14 +31,41 @@ export default function ZoomClassroom() {
   const containerRef = useRef(null);
   const clientRef = useRef(null);
   const attendanceRecorded = useRef(false);
+  const hasJoinedRef = useRef(false);
+  const isLeavingRef = useRef(false);
 
-  const [status, setStatus] = useState('loading'); // 'loading' | 'joining' | 'live' | 'error'
+  const [status, setStatus] = useState('loading');
   const [errorMsg, setErrorMsg] = useState('');
 
   const isHost = user?.role === 'INSTRUCTOR' || user?.role === 'ADMIN';
 
-  // ── Record leave attendance and clean up ─────────────────────────────────
+  const cleanupClient = useCallback(async () => {
+    if (clientRef.current) {
+      try {
+        await clientRef.current.leave();
+      } catch (_) {}
+      clientRef.current = null;
+    }
+  }, []);
+
+  const goBack = useCallback(() => {
+    if (user?.role) {
+      navigate(getBackPath(user.role, courseId));
+    } else {
+      navigate(-1);
+    }
+  }, [user?.role, courseId, navigate]);
+
+  const handleJoinFailure = useCallback(async (message) => {
+    await cleanupClient();
+    setStatus('error');
+    setErrorMsg(message || 'Failed to join the meeting. Please try again.');
+  }, [cleanupClient]);
+
   const handleLeave = useCallback(async () => {
+    if (isLeavingRef.current) return;
+    isLeavingRef.current = true;
+
     if (attendanceRecorded.current) {
       try {
         await zoomService.leaveAttendance(meetingId);
@@ -49,19 +73,10 @@ export default function ZoomClassroom() {
         console.warn('Leave attendance error:', e);
       }
     }
-    if (clientRef.current) {
-      try {
-        await clientRef.current.leave();
-      } catch (_) {}
-      clientRef.current = null;
-    }
-    // Navigate back to the course view
-    if (courseId) {
-      navigate(`/student/course/${courseId}`);
-    } else {
-      navigate(-1);
-    }
-  }, [meetingId, courseId, navigate]);
+
+    await cleanupClient();
+    goBack();
+  }, [meetingId, cleanupClient, goBack]);
 
   useEffect(() => {
     let isMounted = true;
@@ -69,28 +84,51 @@ export default function ZoomClassroom() {
     const init = async () => {
       try {
         setStatus('loading');
+        setErrorMsg('');
+        hasJoinedRef.current = false;
+        // #region agent log
+        fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H2',location:'ZoomClassroom.jsx:init:start',message:'Zoom classroom init started',data:{meetingId,courseId,role:user?.role||null,isHost},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
 
-        // 1. Load Zoom SDK
-        const ZoomMtgEmbedded = await loadZoomSDK();
+        const ZoomMtgEmbedded = getZoomEmbedded();
 
         if (!isMounted) return;
         setStatus('joining');
 
-        // 2. Fetch the signature + SDK key from our backend
         const role = isHost ? 1 : 0;
         const { data: sigData } = await zoomService.getSignature(meetingId, role);
         const { signature, sdkKey, meetingNumber, password } = sigData.data;
+        // #region agent log
+        fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H3',location:'ZoomClassroom.jsx:init:signature',message:'Zoom signature payload received',data:{hasSignature:Boolean(signature),sdkKeyPrefix:sdkKey?String(sdkKey).slice(0,6):null,meetingNumberType:typeof meetingNumber,meetingNumber:String(meetingNumber||''),passwordLength:password?String(password).length:0},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
 
         if (!isMounted) return;
 
-        // 3. Create the embedded client and attach to our DOM element
         const client = ZoomMtgEmbedded.createClient();
         clientRef.current = client;
+        // #region agent log
+        fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H2',location:'ZoomClassroom.jsx:init:createClient',message:'Zoom client created',data:{hasClient:Boolean(client),hasOn:Boolean(client&&typeof client.on==='function'),hasInit:Boolean(client&&typeof client.init==='function'),hasJoin:Boolean(client&&typeof client.join==='function')},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
 
-        client.init({
+        client.on('connection-change', (payload) => {
+          // #region agent log
+          fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H2',location:'ZoomClassroom.jsx:connection-change',message:'Zoom connection state changed',data:{state:payload?.state||null,reason:payload?.reason||null,errorMessage:payload?.errorMessage||null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          if (!isMounted) return;
+          if (payload.state === 'Fail') {
+            handleJoinFailure(
+              payload.reason || payload.errorMessage || 'Failed to join the meeting. Signature may be invalid.'
+            );
+          } else if (payload.state === 'Closed' && hasJoinedRef.current) {
+            handleLeave();
+          }
+        });
+
+        await client.init({
           debug: false,
           zoomAppRoot: containerRef.current,
           language: 'en-US',
+          patchJsMedia: true,
           customize: {
             video: {
               isResizable: true,
@@ -105,39 +143,40 @@ export default function ZoomClassroom() {
           },
         });
 
-        // 4. Join the meeting
+        if (!isMounted) return;
+
         await client.join({
           signature,
           sdkKey,
-          meetingNumber,
-          password,
+          meetingNumber: String(meetingNumber),
+          password: password || '',
           userName: user?.name || 'Guest',
           userEmail: user?.email || '',
           role,
         });
 
         if (!isMounted) return;
+        hasJoinedRef.current = true;
         setStatus('live');
 
-        // 5. Record join attendance
         try {
           await zoomService.joinAttendance(meetingId);
           attendanceRecorded.current = true;
         } catch (e) {
           console.warn('Join attendance error:', e);
         }
-
-        // 6. Listen for when user leaves via Zoom's own controls
-        client.on('connection-change', (payload) => {
-          if (payload.state === 'Closed' || payload.state === 'Fail') {
-            handleLeave();
-          }
-        });
       } catch (err) {
         if (!isMounted) return;
         console.error('Zoom init error:', err);
-        setStatus('error');
-        setErrorMsg(err.message || 'Failed to start the classroom. Please try again.');
+        // #region agent log
+        fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H2',location:'ZoomClassroom.jsx:init:catch',message:'Zoom classroom init failed',data:{message:err?.message||null,name:err?.name||null,reason:err?.reason||null,errorMessage:err?.errorMessage||null,stackTop:err?.stack?String(err.stack).split('\n').slice(0,2).join(' | '):null},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        const msg =
+          err?.reason ||
+          err?.errorMessage ||
+          err?.message ||
+          'Failed to start the classroom. Please try again.';
+        await handleJoinFailure(msg);
       }
     };
 
@@ -145,17 +184,40 @@ export default function ZoomClassroom() {
 
     return () => {
       isMounted = false;
+      cleanupClient();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [meetingId]);
 
-  // Clean up on page unload
+  useEffect(() => {
+    const onError = (event) => {
+      // #region agent log
+      fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H8',location:'ZoomClassroom.jsx:window:error',message:'Window error captured on Zoom page',data:{message:event?.message||null,filename:event?.filename||null,lineno:event?.lineno||null,colno:event?.colno||null},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    };
+    const onUnhandledRejection = (event) => {
+      // #region agent log
+      fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H8',location:'ZoomClassroom.jsx:window:unhandledrejection',message:'Unhandled rejection captured on Zoom page',data:{reasonMessage:event?.reason?.message||String(event?.reason||''),reasonName:event?.reason?.name||null},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    };
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onUnhandledRejection);
+    };
+  }, []);
+
   useEffect(() => {
     const onUnload = () => {
       if (attendanceRecorded.current) {
-        // Best-effort beacon
-        navigator.sendBeacon &&
-          navigator.sendBeacon(`/api/zoom/${meetingId}/attendance/leave`);
+        const token = localStorage.getItem('accessToken');
+        fetch(`${API_URL}/zoom/${meetingId}/attendance/leave`, {
+          method: 'POST',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          keepalive: true,
+          credentials: 'include',
+        }).catch(() => {});
       }
     };
     window.addEventListener('beforeunload', onUnload);
@@ -172,7 +234,6 @@ export default function ZoomClassroom() {
         fontFamily: "'Inter', 'Segoe UI', sans-serif",
       }}
     >
-      {/* ── Top bar ── */}
       <div
         style={{
           display: 'flex',
@@ -185,7 +246,6 @@ export default function ZoomClassroom() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Live indicator */}
           {status === 'live' && (
             <span
               style={{
@@ -223,7 +283,7 @@ export default function ZoomClassroom() {
         </div>
 
         <button
-          onClick={handleLeave}
+          onClick={status === 'error' ? goBack : handleLeave}
           style={{
             background: '#dc2626',
             color: '#fff',
@@ -238,11 +298,10 @@ export default function ZoomClassroom() {
             gap: 6,
           }}
         >
-          ✕ Leave Class
+          ✕ {status === 'error' ? 'Go Back' : 'Leave Class'}
         </button>
       </div>
 
-      {/* ── Status overlays ── */}
       {(status === 'loading' || status === 'joining') && (
         <div
           style={{
@@ -294,7 +353,7 @@ export default function ZoomClassroom() {
             {errorMsg}
           </p>
           <button
-            onClick={() => navigate(-1)}
+            onClick={goBack}
             style={{
               marginTop: 8,
               background: '#3b82f6',
@@ -312,7 +371,6 @@ export default function ZoomClassroom() {
         </div>
       )}
 
-      {/* ── Zoom embedded container ── */}
       <div
         ref={containerRef}
         id="meetingSDKElement"
@@ -324,7 +382,6 @@ export default function ZoomClassroom() {
         }}
       />
 
-      {/* ── Keyframe animations ── */}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse {

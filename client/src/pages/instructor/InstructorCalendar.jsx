@@ -4,10 +4,12 @@ import { zoomService } from '../../services/portalService';
 import { IoCalendarOutline, IoVideocamOutline, IoChevronBackOutline, IoChevronForwardOutline, IoTimeOutline, IoPersonOutline, IoAddCircleOutline } from 'react-icons/io5';
 
 const STATUS_STYLES = {
-  LIVE:      { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200',    dot: 'bg-red-500',    label: '🔴 LIVE'   },
-  SCHEDULED: { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200',   dot: 'bg-blue-500',   label: 'Scheduled' },
-  ENDED:     { bg: 'bg-slate-50',  text: 'text-slate-400',  border: 'border-slate-200',  dot: 'bg-slate-400',  label: 'Ended'     },
-  CANCELLED: { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', dot: 'bg-orange-400', label: 'Cancelled' },
+  LIVE:              { bg: 'bg-red-50',    text: 'text-red-700',    border: 'border-red-200',    dot: 'bg-red-500',    label: '🔴 LIVE'   },
+  SCHEDULED:         { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200',   dot: 'bg-blue-500',   label: 'Scheduled' },
+  PENDING_APPROVAL:  { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200',  dot: 'bg-amber-500',  label: 'Pending'   },
+  REJECTED:          { bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200',    dot: 'bg-red-400',    label: 'Rejected'  },
+  ENDED:             { bg: 'bg-slate-50',  text: 'text-slate-400',  border: 'border-slate-200',  dot: 'bg-slate-400',  label: 'Ended'     },
+  CANCELLED:         { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', dot: 'bg-orange-400', label: 'Cancelled' },
 };
 
 const DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -222,7 +224,7 @@ export default function InstructorCalendar() {
                         </div>
                       </div>
 
-                      {isLive && (
+                      {isLive && meeting.meetingId && (
                         <Link to={`/zoom-classroom/${meeting.meetingId}?courseId=${meeting.course?.id}`}>
                           <button className="w-full mt-1 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer">
                             <IoVideocamOutline size={14} /> Enter Classroom

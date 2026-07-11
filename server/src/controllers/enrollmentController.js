@@ -91,7 +91,7 @@ const enrollmentController = {
               },
             },
             zoomMeetings: {
-              where: { status: { in: ['SCHEDULED', 'LIVE'] } },
+              where: { status: { in: ['SCHEDULED', 'LIVE'] }, meetingId: { not: null } },
               orderBy: { startTime: 'asc' },
               take: 5,
               select: {

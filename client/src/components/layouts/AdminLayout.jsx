@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../constants';
+import { adminService, zoomService } from '../../services/portalService';
 import {
   IoLogOutOutline,
   IoHomeOutline,
@@ -20,6 +21,28 @@ import AnnouncementBanner from '../common/AnnouncementBanner';
 const AdminLayout = () => {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingApprovals, setPendingApprovals] = useState(0);
+  const location = useLocation();
+
+  const fetchPendingCount = useCallback(async () => {
+    try {
+      const [coursesRes, meetingsRes] = await Promise.all([
+        adminService.getPendingCourses(),
+        zoomService.getPendingApprovals(),
+      ]);
+      const courseCount = coursesRes.data?.data?.courses?.length ?? 0;
+      const meetingCount = meetingsRes.data?.data?.meetings?.length ?? 0;
+      setPendingApprovals(courseCount + meetingCount);
+    } catch {
+      // Non-critical — badge stays at last known count
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 60000);
+    return () => clearInterval(interval);
+  }, [fetchPendingCount, location.pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -28,7 +51,7 @@ const AdminLayout = () => {
   const navItems = [
     { to: ROUTES.ADMIN_DASHBOARD, icon: <IoHomeOutline size={18} />, label: 'Dashboard' },
     { to: '/admin/courses', icon: <IoBookOutline size={18} />, label: 'Courses' },
-    { to: '/admin/approvals', icon: <IoCheckmarkCircleOutline size={18} />, label: 'Approvals' },
+    { to: '/admin/approvals', icon: <IoCheckmarkCircleOutline size={18} />, label: 'Approvals', badge: pendingApprovals },
     { to: '/admin/instructors', icon: <IoPersonOutline size={18} />, label: 'Instructors' },
     { to: '/admin/users', icon: <IoPeopleOutline size={18} />, label: 'Users' },
     { to: '/admin/announcements', icon: <IoMegaphoneOutline size={18} />, label: 'Announcements' },
@@ -70,7 +93,12 @@ const AdminLayout = () => {
             }
           >
             {item.icon}
-            <span>{item.label}</span>
+            <span className="flex-1">{item.label}</span>
+            {item.badge > 0 && (
+              <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
+                {item.badge > 99 ? '99+' : item.badge}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>

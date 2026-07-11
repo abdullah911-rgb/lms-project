@@ -21,6 +21,7 @@ function startReminderScheduler() {
       const upcoming30 = await prisma.zoomMeeting.findMany({
         where: {
           status: 'SCHEDULED',
+          meetingId: { not: null },
           startTime: { gte: in30Min, lt: in31Min },
         },
         include: {
@@ -61,6 +62,7 @@ function startReminderScheduler() {
       const upcoming10 = await prisma.zoomMeeting.findMany({
         where: {
           status: 'SCHEDULED',
+          meetingId: { not: null },
           startTime: { gte: in10Min, lt: in11Min },
         },
         include: {
@@ -98,6 +100,7 @@ function startReminderScheduler() {
       const pastScheduled = await prisma.zoomMeeting.findMany({
         where: {
           status: 'SCHEDULED',
+          meetingId: { not: null },
           startTime: { lte: now },
         },
       });
