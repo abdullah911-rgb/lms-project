@@ -209,7 +209,6 @@ const zoomController = {
   getSignature: asyncHandler(async (req, res) => {
     const { meetingId } = req.params;
     const { role = 0 } = req.body;
-    fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H6',location:'zoomController.js:getSignature:start',message:'Zoom signature request received',data:{meetingId:String(meetingId||''),requestedRole:role,userRole:req.user?.role||null},timestamp:Date.now()})}).catch(()=>{});
 
     const meeting = await prisma.zoomMeeting.findFirst({
       where: { meetingId: String(meetingId) },
@@ -234,10 +233,8 @@ const zoomController = {
     try {
       signature = generateZoomSignature(meetingId, sdkRole);
     } catch (sigErr) {
-      fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H6',location:'zoomController.js:getSignature:error',message:'Zoom signature generation failed',data:{message:sigErr?.message||null},timestamp:Date.now()})}).catch(()=>{});
       return sendError(res, sigErr.message, 500);
     }
-    fetch('http://127.0.0.1:7426/ingest/3c625e6b-f1af-45ab-a819-1fb708d0e578',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'947982'},body:JSON.stringify({sessionId:'947982',runId:'initial',hypothesisId:'H6',location:'zoomController.js:getSignature:success',message:'Zoom signature generated',data:{sdkRole,meetingStatus:meeting.status,hasPassword:Boolean(meeting.password),sdkKeyPrefix:sdkKey?String(sdkKey).slice(0,6):null},timestamp:Date.now()})}).catch(()=>{});
 
     sendSuccess(res, 'Signature generated.', {
       signature,

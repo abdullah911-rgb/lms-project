@@ -36,9 +36,12 @@ function ensureHeaders(config) {
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
+    const headers = ensureHeaders(config);
     if (token) {
-      const headers = ensureHeaders(config);
       headers.Authorization = `Bearer ${token}`;
+    } else {
+      delete headers.Authorization;
+      delete api.defaults.headers.common['Authorization'];
     }
     return config;
   },

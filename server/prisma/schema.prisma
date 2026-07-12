@@ -115,6 +115,8 @@ model User {
   otpVerifications     OTPVerification[]
   quizAttempts         QuizAttempt[]
   platformAnnouncements PlatformAnnouncement[] @relation("AdminAnnouncements")
+  reviews              Review[]               @relation("StudentReviews")
+  receivedReviews      Review[]               @relation("InstructorReviews")
 
   // Instructor specific
   courses         Course[]         @relation("InstructorCourses")
@@ -214,6 +216,7 @@ model Course {
   announcements    Announcement[]
   certificates     Certificate[]
   resources        Resource[]
+  reviews          Review[]
 
   @@index([slug])
   @@index([categoryId])
@@ -515,4 +518,26 @@ model Notification {
   @@index([userId])
   @@index([isRead])
   @@map("notifications")
+}
+
+// ─── REVIEW ──────────────────────────────────────────────────────────────────
+
+model Review {
+  id           String   @id @default(uuid())
+  rating       Int      // 1 to 5
+  comment      String
+  studentId    String
+  courseId     String?
+  instructorId String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  student    User    @relation("StudentReviews", fields: [studentId], references: [id], onDelete: Cascade)
+  course     Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  instructor User?   @relation("InstructorReviews", fields: [instructorId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([courseId])
+  @@index([instructorId])
+  @@map("reviews")
 }

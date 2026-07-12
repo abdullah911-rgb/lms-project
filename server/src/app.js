@@ -19,6 +19,7 @@ const lessonRoutes = require('./routes/lessonRoutes');
 const zoomRoutes = require('./routes/zoomRoutes');
 const resourceRoutes = require('./routes/resourceRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/zoom', zoomRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

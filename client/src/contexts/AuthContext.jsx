@@ -22,14 +22,20 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async (showToast = true) => {
     setLoading(true);
     setPostLoginRole(null);
+
+    // Clear client-side session immediately to ensure instant logout in the UI
+    localStorage.removeItem('accessToken');
+    delete api.defaults.headers.common['Authorization'];
+    setUser(null);
+
     try {
+      // Notify backend to remove the database token and clear cookie
       await api.post('/auth/logout');
     } catch (err) {
       console.error('Logout request failed:', err);
     }
-    localStorage.removeItem('accessToken');
+
     navigate(ROUTES.HOME, { replace: true, state: null });
-    setUser(null);
     setLoading(false);
     if (showToast) {
       toast.success('Logged out successfully.');

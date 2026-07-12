@@ -8,4 +8,4 @@ ALTER TABLE "zoom_meetings" ALTER COLUMN "joinUrl" DROP NOT NULL;
 ALTER TABLE "zoom_meetings" ADD COLUMN IF NOT EXISTS "rejectedNote" TEXT;
 
 -- Existing meetings without approval were already live — keep them as-is
-UPDATE "zoom_meetings" SET "status" = 'SCHEDULED' WHERE "status" = 'PENDING_APPROVAL' AND "meetingId" IS NOT NULL;
+-- UPDATE "zoom_meetings" SET "status" = 'SCHEDULED' WHERE "status" = 'PENDING_APPROVAL' AND "meetingId" IS NOT NULL;

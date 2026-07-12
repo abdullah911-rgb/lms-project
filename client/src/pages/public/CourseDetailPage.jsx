@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Spinner from '../../components/ui/Spinner';
 import { enrollmentService, resourceService } from '../../services/portalService';
+import ReviewsSection from '../../components/common/ReviewsSection';
 import toast from 'react-hot-toast';
 import { 
   IoCheckmarkCircleSharp, 
@@ -279,6 +280,26 @@ const CourseDetailPage = () => {
                   </div>
                 </Card>
               </div>
+            )}
+
+            {/* Course Reviews */}
+            {course?.id && (
+              <ReviewsSection
+                type="course"
+                targetId={course.id}
+                targetLabel={`"${course.title}"`}
+                isEnrolled={isEnrolled}
+              />
+            )}
+
+            {/* Instructor Reviews */}
+            {course?.instructor?.id && (
+              <ReviewsSection
+                type="instructor"
+                targetId={course.instructor.id}
+                targetLabel={course.instructor.name || 'this trainer'}
+                isEnrolled={isEnrolled}
+              />
             )}
 
           </div>

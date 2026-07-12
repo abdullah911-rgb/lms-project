@@ -138,3 +138,18 @@ export const adminService = {
   deleteAnnouncement: (id) => api.delete(`/admin/announcements/${id}`),
   getActiveAnnouncements: () => api.get('/admin/announcements/active/banner'),
 };
+
+export const reviewService = {
+  // Create a course or instructor review (authenticated students only)
+  create: (data) => api.post('/reviews', data),
+
+  // Get all reviews for a course
+  getByCourse: (courseId) => api.get(`/reviews/course/${courseId}`),
+
+  // Get all reviews for an instructor
+  getByInstructor: (instructorId) => api.get(`/reviews/instructor/${instructorId}`),
+
+  // Delete a review
+  delete: (id) => api.delete(`/reviews/${id}`),
+};
+
