@@ -15,6 +15,8 @@ import {
   IoMegaphoneOutline,
   IoMenuOutline,
   IoCloseOutline,
+  IoCardOutline,
+  IoCashOutline,
 } from 'react-icons/io5';
 import AnnouncementBanner from '../common/AnnouncementBanner';
 
@@ -49,13 +51,15 @@ const AdminLayout = () => {
   };
 
   const navItems = [
-    { to: ROUTES.ADMIN_DASHBOARD, icon: <IoHomeOutline size={18} />, label: 'Dashboard' },
-    { to: '/admin/courses', icon: <IoBookOutline size={18} />, label: 'Courses' },
-    { to: '/admin/approvals', icon: <IoCheckmarkCircleOutline size={18} />, label: 'Approvals', badge: pendingApprovals },
-    { to: '/admin/instructors', icon: <IoPersonOutline size={18} />, label: 'Instructors' },
-    { to: '/admin/users', icon: <IoPeopleOutline size={18} />, label: 'Users' },
-    { to: '/admin/announcements', icon: <IoMegaphoneOutline size={18} />, label: 'Announcements' },
-    { to: '/admin/enrollments', icon: <IoBarChartOutline size={18} />, label: 'Enrollments' },
+    { to: ROUTES.ADMIN_DASHBOARD,    icon: <IoHomeOutline size={18} />,             label: 'Dashboard' },
+    { to: '/admin/courses',          icon: <IoBookOutline size={18} />,             label: 'Courses' },
+    { to: '/admin/approvals',        icon: <IoCheckmarkCircleOutline size={18} />, label: 'Approvals', badge: pendingApprovals },
+    { to: '/admin/instructors',      icon: <IoPersonOutline size={18} />,           label: 'Instructors' },
+    { to: '/admin/users',            icon: <IoPeopleOutline size={18} />,           label: 'Users' },
+    { to: '/admin/payments',         icon: <IoCardOutline size={18} />,             label: 'Payments' },
+    { to: '/admin/revenue',          icon: <IoCashOutline size={18} />,             label: 'Revenue' },
+    { to: '/admin/announcements',    icon: <IoMegaphoneOutline size={18} />,        label: 'Announcements' },
+    { to: '/admin/enrollments',      icon: <IoBarChartOutline size={18} />,         label: 'Enrollments' },
   ];
 
   const sidebarContent = (

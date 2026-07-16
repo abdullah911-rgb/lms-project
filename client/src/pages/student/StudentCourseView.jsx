@@ -129,11 +129,19 @@ const StudentCourseView = () => {
         </Link>
         <div>
           <h1 className="text-xl sm:text-2xl font-heading font-bold text-primary-900">{course.title}</h1>
-          <div className="flex items-center gap-4 mt-1">
+          <div className="flex items-center gap-4 mt-1 flex-wrap">
             <p className="text-xs text-slate-400 font-semibold">Instructor: {course.instructor?.name}</p>
             <span className="text-[10px] font-bold text-accent-700 bg-accent-50 px-2 py-0.5 rounded border border-accent-100 uppercase">
               {enrollment.progress}% Complete
             </span>
+            {enrollment.progress >= 80 && course.certificate && (
+              <Link
+                to="/student/certificates"
+                className="flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 uppercase hover:bg-emerald-100 transition-colors"
+              >
+                🎓 Claim Certificate
+              </Link>
+            )}
           </div>
         </div>
       </div>

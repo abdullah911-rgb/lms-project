@@ -256,6 +256,11 @@ const CoursesPage = () => {
                           <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
                             {course.shortDescription || course.description}
                           </p>
+                          <div className="flex gap-2 items-center text-[10px] font-bold text-slate-400">
+                            <span>⏱️ {course.durationInMonths || 2} Months</span>
+                            <span>•</span>
+                            <span>📖 {course.totalLessons} Lessons</span>
+                          </div>
                         </div>
 
                         {/* Bottom Metadata bar */}

@@ -48,6 +48,13 @@ import AdminCourses from './pages/admin/AdminCourses';
 import AdminEnrollments from './pages/admin/AdminEnrollments';
 import AdminInstructors from './pages/admin/AdminInstructors';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
+import AdminPayments from './pages/admin/AdminPayments';
+import AdminRevenue from './pages/admin/AdminRevenue';
+
+// Student extras
+import MyCertificates from './pages/student/MyCertificates';
+import PaymentPage from './pages/student/PaymentPage';
+import StudentPayments from './pages/student/StudentPayments';
 
 // Zoom Classroom
 import ZoomClassroom from './pages/ZoomClassroom';
@@ -110,6 +117,9 @@ function App() {
             <Route path="course/:courseId" element={<StudentCourseView />} />
             <Route path="profile" element={<StudentProfile />} />
             <Route path="calendar" element={<StudentCalendar />} />
+            <Route path="certificates" element={<MyCertificates />} />
+            <Route path="payments" element={<StudentPayments />} />
+            <Route path="pay/:courseId" element={<PaymentPage />} />
           </Route>
 
           {/* Instructor Dashboard Layout */}
@@ -148,6 +158,8 @@ function App() {
             <Route path="enrollments" element={<AdminEnrollments />} />
             <Route path="instructors" element={<AdminInstructors />} />
             <Route path="announcements" element={<AdminAnnouncements />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="revenue" element={<AdminRevenue />} />
           </Route>
 
           {/* Zoom In-Browser Classroom — accessible to all authenticated roles */}

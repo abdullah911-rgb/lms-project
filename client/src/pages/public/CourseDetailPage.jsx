@@ -66,6 +66,11 @@ const CourseDetailPage = () => {
       return;
     }
 
+    if (!course.isFree && Number(course.price) > 0) {
+      navigate(`/student/pay/${course.id}`);
+      return;
+    }
+
     setEnrollSubmitting(true);
     try {
       await enrollmentService.enroll(course.id);
@@ -327,8 +332,11 @@ const CourseDetailPage = () => {
               <div className="space-y-1 text-center">
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Course Pricing</p>
                 <p className="text-3xl font-heading font-extrabold text-slate-800">
-                  {course.isFree ? 'Free Access' : `$${course.price}`}
+                  {course.isFree ? 'Free Access' : `PKR ${Number(course.price).toLocaleString()}`}
                 </p>
+                {course.durationInMonths && (
+                  <p className="text-sm text-slate-500 font-medium">⏱️ {course.durationInMonths} Month Course</p>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -346,7 +354,7 @@ const CourseDetailPage = () => {
                     onClick={handleEnroll}
                     isLoading={enrollSubmitting}
                   >
-                    Enroll in Course
+                    {course.isFree ? 'Enroll in Course' : 'Buy Now / Pay & Enroll'}
                   </Button>
                 )}
               </div>

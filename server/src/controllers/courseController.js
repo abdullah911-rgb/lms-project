@@ -54,6 +54,7 @@ const courseController = {
           isFree: true,
           price: true,
           duration: true,
+          durationInMonths: true,
           totalLessons: true,
           language: true,
           certificate: true,
@@ -139,6 +140,7 @@ const courseController = {
         isFree: true,
         price: true,
         duration: true,
+        durationInMonths: true,
         totalLessons: true,
         certificate: true,
         category: { select: { id: true, name: true, slug: true } },
@@ -166,7 +168,7 @@ const courseController = {
 
   // POST /api/courses
   create: asyncHandler(async (req, res) => {
-    const { title, description, shortDescription, categoryId, level, price, isFree, language, learningOutcomes, prerequisites, certificate } = req.body;
+    const { title, description, shortDescription, categoryId, level, price, isFree, language, learningOutcomes, prerequisites, certificate, durationInMonths } = req.body;
     const slug = slugify(title, { lower: true, strict: true }) + '-' + Date.now();
     const thumbnail = req.file ? `/uploads/${req.file.filename}` : null;
 
@@ -182,6 +184,7 @@ const courseController = {
         level: level || 'BEGINNER',
         price: parseFloat(price) || 0,
         isFree: isFree === 'true' || isFree === true,
+        durationInMonths: parseInt(durationInMonths, 10) || 2,
         language: language || 'English',
         learningOutcomes: learningOutcomes || [],
         prerequisites: prerequisites || [],
@@ -206,7 +209,7 @@ const courseController = {
       return sendError(res, 'You are not authorized to edit this course.', 403);
     }
 
-    const { title, description, shortDescription, categoryId, level, price, isFree, language, status, learningOutcomes, prerequisites, certificate } = req.body;
+    const { title, description, shortDescription, categoryId, level, price, isFree, language, status, learningOutcomes, prerequisites, certificate, durationInMonths } = req.body;
     const data = {};
 
     // Instructors can only update details; changes go into pendingEdits for admin review
@@ -220,6 +223,7 @@ const courseController = {
       if (level) pendingEdits.level = level;
       if (price !== undefined) pendingEdits.price = parseFloat(price);
       if (isFree !== undefined) pendingEdits.isFree = isFree === 'true' || isFree === true;
+      if (durationInMonths !== undefined) pendingEdits.durationInMonths = parseInt(durationInMonths, 10);
       if (language) pendingEdits.language = language;
       if (learningOutcomes) pendingEdits.learningOutcomes = learningOutcomes;
       if (prerequisites) pendingEdits.prerequisites = prerequisites;
@@ -242,6 +246,7 @@ const courseController = {
     if (level) data.level = level;
     if (price !== undefined) data.price = parseFloat(price);
     if (isFree !== undefined) data.isFree = isFree === 'true' || isFree === true;
+    if (durationInMonths !== undefined) data.durationInMonths = parseInt(durationInMonths, 10);
     if (language) data.language = language;
     if (status) data.status = status;
     if (learningOutcomes) data.learningOutcomes = learningOutcomes;

@@ -140,16 +140,32 @@ export const adminService = {
 };
 
 export const reviewService = {
-  // Create a course or instructor review (authenticated students only)
   create: (data) => api.post('/reviews', data),
-
-  // Get all reviews for a course
   getByCourse: (courseId) => api.get(`/reviews/course/${courseId}`),
-
-  // Get all reviews for an instructor
   getByInstructor: (instructorId) => api.get(`/reviews/instructor/${instructorId}`),
-
-  // Delete a review
   delete: (id) => api.delete(`/reviews/${id}`),
 };
+
+export const paymentService = {
+  // Public
+  getMethods: () => api.get('/payments/methods'),
+  // Student
+  submitRequest: (formData) => api.post('/payments/request', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  getMyRequests: () => api.get('/payments/my-requests'),
+  // Admin
+  adminGetMethods: () => api.get('/payments/admin/methods'),
+  adminCreateMethod: (data) => api.post('/payments/admin/methods', data),
+  adminUpdateMethod: (id, data) => api.put(`/payments/admin/methods/${id}`, data),
+  adminDeleteMethod: (id) => api.delete(`/payments/admin/methods/${id}`),
+  adminGetRequests: (params) => api.get('/payments/admin/requests', { params }),
+  adminApproveRequest: (id) => api.patch(`/payments/admin/requests/${id}/approve`),
+  adminRejectRequest: (id, reason) => api.patch(`/payments/admin/requests/${id}/reject`, { reason }),
+  adminGetRevenue: () => api.get('/payments/admin/revenue'),
+};
+
+export const certificateService = {
+  getCertificate: (courseId) => api.get(`/certificates/${courseId}`),
+  getMyCertificates: () => api.get('/certificates/my'),
+};
+
 

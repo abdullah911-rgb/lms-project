@@ -39,6 +39,7 @@ const CourseForm = () => {
   const [isFree, setIsFree] = useState(true);
   const [language, setLanguage] = useState('English');
   const [certificate, setCertificate] = useState(true);
+  const [durationInMonths, setDurationInMonths] = useState(2);
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState('');
   const [savingCourse, setSavingCourse] = useState(false);
@@ -133,6 +134,7 @@ const CourseForm = () => {
             setIsFree(match.isFree);
             setLanguage(match.language || 'English');
             setCertificate(match.certificate);
+            setDurationInMonths(match.durationInMonths || 2);
             setCourseApprovalStatus({ pendingApproval: match.pendingApproval, status: match.status });
             if (match.thumbnail) {
               setThumbnailPreview(match.thumbnail.startsWith('/') ? `http://localhost:5000${match.thumbnail}` : match.thumbnail);
@@ -186,6 +188,7 @@ const CourseForm = () => {
       formData.append('isFree', isFree.toString());
       formData.append('language', language);
       formData.append('certificate', certificate.toString());
+      formData.append('durationInMonths', durationInMonths.toString());
       if (thumbnail) {
         formData.append('thumbnail', thumbnail);
       }
@@ -670,6 +673,19 @@ const CourseForm = () => {
                     onChange={(e) => setCertificate(e.target.checked)}
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer"
                   />
+                </div>
+
+                <div className="space-y-1.5 pt-2 border-t border-slate-50">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Course Duration</label>
+                  <select
+                    value={durationInMonths}
+                    onChange={(e) => setDurationInMonths(parseInt(e.target.value, 10))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-100 focus:outline-none focus:border-primary-600 text-sm bg-white cursor-pointer"
+                  >
+                    <option value={2}>2 Months Course</option>
+                    <option value={4}>4 Months Course</option>
+                    <option value={6}>6 Months Course</option>
+                  </select>
                 </div>
               </div>
             </Card>
