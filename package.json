@@ -22,7 +22,6 @@
     "uuid": "^14.0.1"
   },
   "scripts": {
-    "build": "npx prisma generate --schema=server/prisma/schema.prisma && cd client && npm install && npm run build",
-    "postinstall": "npx prisma generate --schema=server/prisma/schema.prisma"
+    "build": "npx prisma generate --schema=server/prisma/schema.prisma && cd client && npm install && npm run build"
   }
 }
