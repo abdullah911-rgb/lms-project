@@ -47,10 +47,11 @@ const verifyRefreshToken = (token) => {
  * @param {string} token - Refresh token
  */
 const setRefreshTokenCookie = (res, token) => {
+  const isProd = process.env.NODE_ENV === 'production';
   res.cookie('refreshToken', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProd,           // HTTPS only in production
+    sameSite: isProd ? 'none' : 'lax', // cross-origin needs 'none' in production
     maxAge: config.jwt.refreshExpiresInMs,
     path: '/',
   });
@@ -61,10 +62,11 @@ const setRefreshTokenCookie = (res, token) => {
  * @param {object} res - Express response object
  */
 const clearRefreshTokenCookie = (res) => {
+  const isProd = process.env.NODE_ENV === 'production';
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
     path: '/',
   });
 };
