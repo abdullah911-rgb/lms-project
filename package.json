@@ -2,6 +2,10 @@
   "name": "lms-monorepo",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "dependencies": {
     "@prisma/client": "^5.20.0",
     "bcryptjs": "^3.0.3",
@@ -22,6 +26,6 @@
     "uuid": "^14.0.1"
   },
   "scripts": {
-    "build": "npx prisma generate --schema=server/prisma/schema.prisma && cd client && npm install && npm run build"
+    "build": "npx prisma generate --schema=server/prisma/schema.prisma && npm run build --workspace=client"
   }
 }
