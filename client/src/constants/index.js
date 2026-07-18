@@ -1,4 +1,16 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_URL = import.meta.env.VITE_API_URL || 
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api');
+
+export const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  
+  const base = import.meta.env.VITE_API_URL 
+    ? import.meta.env.VITE_API_URL.replace('/api', '') 
+    : (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '') : '');
+  
+  return `${base}${path}`;
+};
 
 export const ROUTES = {
   HOME: '/',

@@ -3,9 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { paymentService } from '../../services/portalService';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const METHOD_ICONS = { BANK_TRANSFER: '🏦', EASYPAISA: '🟢', JAZZCASH: '🟠' };
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '');
 
 export default function PaymentPage() {
   const { courseId } = useParams();

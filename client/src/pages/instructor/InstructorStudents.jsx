@@ -3,6 +3,7 @@ import Card from '../../components/ui/Card';
 import { instructorService } from '../../services/portalService';
 import { IoPeopleOutline, IoBookOutline } from 'react-icons/io5';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const InstructorStudents = () => {
   const [courses, setCourses] = useState([]);
@@ -124,7 +125,7 @@ const InstructorStudents = () => {
                       <div className="flex items-center gap-3">
                         {enrollment.student.avatar ? (
                           <img
-                            src={enrollment.student.avatar.startsWith('/') ? `http://localhost:5000${enrollment.student.avatar}` : enrollment.student.avatar}
+                            src={getImageUrl(enrollment.student.avatar)}
                             alt={enrollment.student.name}
                             className="h-8 w-8 rounded-full object-cover border border-slate-100"
                           />

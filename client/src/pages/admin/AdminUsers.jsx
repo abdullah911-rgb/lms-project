@@ -3,6 +3,7 @@ import Card from '../../components/ui/Card';
 import { adminService } from '../../services/portalService';
 import toast from 'react-hot-toast';
 import {
+import { getImageUrl } from '../../constants/index';
   IoPeopleOutline,
   IoPersonOutline,
   IoSchoolOutline,
@@ -150,7 +151,7 @@ const AdminUsers = () => {
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-heading font-bold text-sm shrink-0">
                           {user.avatar ? (
-                            <img src={`http://localhost:5000${user.avatar}`} alt={user.name} className="h-9 w-9 rounded-full object-cover" />
+                            <img src={getImageUrl(user.avatar)} alt={user.name} className="h-9 w-9 rounded-full object-cover" />
                           ) : (
                             user.name?.split(' ').map((n) => n[0]).join('') || '?'
                           )}

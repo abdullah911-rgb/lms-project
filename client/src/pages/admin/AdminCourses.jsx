@@ -3,6 +3,7 @@ import Card from '../../components/ui/Card';
 import { adminService } from '../../services/portalService';
 import toast from 'react-hot-toast';
 import {
+import { getImageUrl } from '../../constants/index';
   IoBookOutline,
   IoLayersOutline,
   IoPersonOutline,
@@ -125,7 +126,7 @@ const AdminCourses = () => {
               <div className="relative h-36 bg-slate-50">
                 {course.thumbnail ? (
                   <img
-                    src={`http://localhost:5000${course.thumbnail}`}
+                    src={getImageUrl(course.thumbnail)}
                     alt={course.title}
                     className="h-full w-full object-cover"
                   />

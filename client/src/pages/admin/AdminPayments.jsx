@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { paymentService } from '../../services/portalService';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const METHOD_TYPES = [
   { value: 'BANK_TRANSFER', label: '🏦 Bank Transfer', color: '#3b82f6' },
@@ -14,7 +15,7 @@ const STATUS_COLORS = {
   REJECTED: { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' },
 };
 
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '');
 
 // ─────────────────────────────────────────────────────────────────────────────
 

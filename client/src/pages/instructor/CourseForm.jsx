@@ -22,6 +22,7 @@ import {
   IoTimeOutline
 } from 'react-icons/io5';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const CourseForm = () => {
   const { courseId } = useParams();
@@ -1161,7 +1162,7 @@ const CourseForm = () => {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <a
-                        href={`http://localhost:5000${resource.fileUrl}`}
+                        href={getImageUrl(resource.fileUrl)}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[10px] font-bold text-primary-600 hover:text-primary-700 px-2 py-1 rounded-lg hover:bg-primary-50 transition-all"

@@ -4,6 +4,7 @@ import Button from '../../components/ui/Button';
 import { adminService, zoomService } from '../../services/portalService';
 import toast from 'react-hot-toast';
 import {
+import { getImageUrl } from '../../constants/index';
   IoCheckmarkCircleOutline,
   IoCloseCircleOutline,
   IoTimeOutline,
@@ -167,7 +168,7 @@ const AdminApprovals = () => {
                   <div className="shrink-0">
                     {course.thumbnail ? (
                       <img
-                        src={`http://localhost:5000${course.thumbnail}`}
+                        src={getImageUrl(course.thumbnail)}
                         alt={course.title}
                         className="h-16 w-24 object-cover rounded-xl border border-slate-100"
                       />

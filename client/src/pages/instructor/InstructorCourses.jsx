@@ -6,6 +6,7 @@ import { instructorService } from '../../services/portalService';
 import { ROUTES } from '../../constants';
 import { IoAddOutline, IoCreateOutline, IoTrashOutline, IoPeopleOutline, IoLayersOutline } from 'react-icons/io5';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const InstructorCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -95,7 +96,7 @@ const InstructorCourses = () => {
                       <div className="flex items-center gap-3">
                         {course.thumbnail ? (
                           <img
-                            src={course.thumbnail.startsWith('/') ? `http://localhost:5000${course.thumbnail}` : course.thumbnail}
+                            src={getImageUrl(course.thumbnail)}
                             alt={course.title}
                             className="h-10 w-14 object-cover rounded-lg border border-slate-100"
                           />

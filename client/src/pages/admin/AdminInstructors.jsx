@@ -4,6 +4,7 @@ import Button from '../../components/ui/Button';
 import { adminService } from '../../services/portalService';
 import toast from 'react-hot-toast';
 import {
+import { getImageUrl } from '../../constants/index';
   IoPersonOutline,
   IoCheckmarkCircleOutline,
   IoCloseCircleOutline,
@@ -214,7 +215,7 @@ const AdminInstructors = () => {
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-xl bg-primary-100 text-primary-750 flex items-center justify-center font-bold font-heading shrink-0 border border-primary-200">
                         {inst.avatar ? (
-                          <img src={`http://localhost:5000${inst.avatar}`} alt={inst.name} className="h-10 w-10 rounded-xl object-cover" />
+                          <img src={getImageUrl(inst.avatar)} alt={inst.name} className="h-10 w-10 rounded-xl object-cover" />
                         ) : (
                           inst.name?.split(' ').map(n => n[0]).join('') || '?'
                         )}

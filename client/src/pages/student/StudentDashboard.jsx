@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { enrollmentService } from '../../services/portalService';
 import { ROUTES } from '../../constants';
 import { IoBookOutline, IoTimeOutline, IoRibbonOutline, IoCalendarOutline, IoChevronForwardOutline } from 'react-icons/io5';
+import { getImageUrl } from '../../constants/index';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -115,7 +116,7 @@ const StudentDashboard = () => {
                   <div className="flex items-center gap-3">
                     {item.course.thumbnail ? (
                       <img
-                        src={item.course.thumbnail.startsWith('/') ? `http://localhost:5000${item.course.thumbnail}` : item.course.thumbnail}
+                        src={getImageUrl(item.course.thumbnail)}
                         alt={item.course.title}
                         className="h-12 w-16 object-cover rounded-lg border border-slate-100"
                       />

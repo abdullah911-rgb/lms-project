@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { certificateService } from '../../services/portalService';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const LEVEL_COLORS = { BEGINNER: '#22c55e', INTERMEDIATE: '#3b82f6', ADVANCED: '#f59e0b' };
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '');
 
 export default function MyCertificates() {
   const [certificates, setCertificates] = useState([]);

@@ -6,6 +6,7 @@ import Card from '../../components/ui/Card';
 import api from '../../services/api';
 import { motion } from 'framer-motion';
 import { 
+import { getImageUrl } from '../../constants/index';
   IoBookOutline, 
   IoPeopleOutline, 
   IoRibbonOutline, 
@@ -213,7 +214,7 @@ const HomePage = () => {
                   <div className="aspect-video w-full bg-slate-100 relative overflow-hidden">
                     {course.thumbnail ? (
                       <img 
-                        src={course.thumbnail.startsWith('/') ? `http://localhost:5000${course.thumbnail}` : course.thumbnail} 
+                        src={getImageUrl(course.thumbnail)} 
                         alt={course.title} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

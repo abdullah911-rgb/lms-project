@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Spinner from '../../components/ui/Spinner';
 import { IoSearchOutline, IoFilterOutline } from 'react-icons/io5';
+import { getImageUrl } from '../../constants/index';
 
 const CoursesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -230,7 +231,7 @@ const CoursesPage = () => {
                       <div className="aspect-video w-full bg-slate-100 relative overflow-hidden">
                         {course.thumbnail ? (
                           <img 
-                            src={course.thumbnail.startsWith('/') ? `http://localhost:5000${course.thumbnail}` : course.thumbnail} 
+                            src={getImageUrl(course.thumbnail)} 
                             alt={course.title} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />

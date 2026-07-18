@@ -11,6 +11,7 @@ import { enrollmentService, resourceService } from '../../services/portalService
 import ReviewsSection from '../../components/common/ReviewsSection';
 import toast from 'react-hot-toast';
 import { 
+import { getImageUrl } from '../../constants/index';
   IoCheckmarkCircleSharp, 
   IoChevronDownOutline, 
   IoBookOutline, 
@@ -273,7 +274,7 @@ const CourseDetailPage = () => {
                           </div>
                         </div>
                         <a
-                          href={`http://localhost:5000${res.fileUrl}`}
+                          href={getImageUrl(res.fileUrl)}
                           target="_blank"
                           rel="noreferrer"
                           className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-[10px] font-bold transition-all"
@@ -317,7 +318,7 @@ const CourseDetailPage = () => {
               <div className="aspect-video w-full rounded-xl bg-slate-100 overflow-hidden relative border border-slate-50">
                 {course.thumbnail ? (
                   <img 
-                    src={course.thumbnail.startsWith('/') ? `http://localhost:5000${course.thumbnail}` : course.thumbnail} 
+                    src={getImageUrl(course.thumbnail)} 
                     alt={course.title} 
                     className="w-full h-full object-cover"
                   />

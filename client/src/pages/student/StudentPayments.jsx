@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { paymentService } from '../../services/portalService';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '../../constants/index';
 
 const STATUS_STYLES = {
   PENDING:  { bg: '#fef9c3', text: '#854d0e', icon: '⏳', label: 'Pending Review' },
@@ -9,7 +10,7 @@ const STATUS_STYLES = {
   REJECTED: { bg: '#fee2e2', text: '#991b1b', icon: '❌', label: 'Rejected' },
 };
 
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '');
 
 export default function StudentPayments() {
   const [requests, setRequests] = useState([]);

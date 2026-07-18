@@ -3,6 +3,7 @@ import Card from '../../components/ui/Card';
 import { adminService } from '../../services/portalService';
 import toast from 'react-hot-toast';
 import {
+import { getImageUrl } from '../../constants/index';
   IoSchoolOutline,
   IoPersonOutline,
   IoBookOutline,
@@ -79,7 +80,7 @@ const AdminEnrollments = () => {
                         <div className="h-8 w-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs shrink-0">
                           {enr.student?.avatar ? (
                             <img
-                              src={`http://localhost:5000${enr.student.avatar}`}
+                              src={getImageUrl(enr.student.avatar)}
                               alt={enr.student.name}
                               className="h-8 w-8 rounded-full object-cover"
                             />

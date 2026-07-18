@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button';
 import { enrollmentService } from '../../services/portalService';
 import { ROUTES } from '../../constants';
 import { IoBookOutline, IoTimeOutline, IoRibbonOutline } from 'react-icons/io5';
+import { getImageUrl } from '../../constants/index';
 
 const MyCourses = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -91,7 +92,7 @@ const MyCourses = () => {
               <div className="aspect-video w-full bg-slate-100 relative overflow-hidden">
                 {item.course.thumbnail ? (
                   <img
-                    src={item.course.thumbnail.startsWith('/') ? `http://localhost:5000${item.course.thumbnail}` : item.course.thumbnail}
+                    src={getImageUrl(item.course.thumbnail)}
                     alt={item.course.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
