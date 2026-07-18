@@ -3,6 +3,14 @@ const path = require('path');
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+// Sanitize Neon DATABASE_URL: Node's pg driver does not support channel_binding=require
+if (process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL
+    .replace(/&channel_binding=[^&]*/g, '')
+    .replace(/\?channel_binding=[^&]*&/g, '?')
+    .replace(/\?channel_binding=[^&]*/g, '');
+}
+
 const config = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT, 10) || 5000,

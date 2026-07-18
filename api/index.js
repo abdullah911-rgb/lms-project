@@ -1,3 +1,10 @@
+if (process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL
+    .replace(/&channel_binding=[^&]*/g, '')
+    .replace(/\?channel_binding=[^&]*&/g, '?')
+    .replace(/\?channel_binding=[^&]*/g, '');
+}
+
 const app = require('../server/src/app');
 const prisma = require('../server/src/config/db');
 
