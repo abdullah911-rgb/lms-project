@@ -141,27 +141,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 2. Platform Statistics Section */}
-      <section className="bg-primary-800 py-10 sm:py-16 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalCourses}</p>
-            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Active Courses</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalStudents}</p>
-            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Certified Learners</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalInstructors}</p>
-            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Expert Trainers</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-heading font-extrabold text-accent-400">{stats.totalEnrollments}</p>
-            <p className="text-xs sm:text-sm text-primary-200 uppercase tracking-wider font-semibold mt-1">Course Enrollments</p>
-          </div>
-        </div>
-      </section>
+
 
       {/* 3. Core Features Section */}
       <section className="py-20 sm:py-28 bg-white">
