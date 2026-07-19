@@ -27,7 +27,7 @@ export default function ZoomClassroom() {
   const [searchParams] = useSearchParams();
   const courseId = searchParams.get('courseId');
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   const containerRef = useRef(null);
   const clientRef = useRef(null);
@@ -77,6 +77,7 @@ export default function ZoomClassroom() {
 
   // ── Main init effect ──────────────────────────────────────────────────────
   useEffect(() => {
+    if (loading || !user) return;
     let isMounted = true;
 
     const init = async () => {
@@ -161,13 +162,14 @@ export default function ZoomClassroom() {
         if (!isMounted) return;
 
         // 6. Join — do NOT pass `role` here; it is already encoded in the signature
+        const safeEmail = (user?.email && user.email.includes('@')) ? user.email : 'student@lms.com';
         await client.join({
           signature,
           sdkKey,
           meetingNumber: String(meetingNumber),
           password: password || '',
-          userName: user?.name || 'Guest',
-          userEmail: user?.email || '',
+          userName: user?.name || 'Guest User',
+          userEmail: safeEmail,
           ...(zak && { zak }), // Pass the ZAK token for hosts
         });
 
@@ -202,7 +204,7 @@ export default function ZoomClassroom() {
       cleanupClient();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meetingId]);
+  }, [meetingId, user, loading]);
 
   // ── Send leave beacon on page unload ────────────────────────────────────
   useEffect(() => {
@@ -219,6 +221,34 @@ export default function ZoomClassroom() {
     window.addEventListener('beforeunload', onUnload);
     return () => window.removeEventListener('beforeunload', onUnload);
   }, [meetingId]);
+
+  if (loading || !user) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#0f172a',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 16,
+          color: '#cbd5e1',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <div
+          style={{
+            width: 48, height: 48,
+            border: '4px solid #334155', borderTop: '4px solid #3b82f6',
+            borderRadius: '50%', animation: 'spin 0.9s linear infinite',
+          }}
+        />
+        <p style={{ fontSize: 15, margin: 0 }}>Restoring classroom session...</p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
