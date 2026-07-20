@@ -41,13 +41,17 @@ const AboutPage = () => {
             </ul>
           </div>
           
-          <div className="bg-gradient-to-tr from-primary-900 to-primary-750 rounded-3xl p-8 text-white relative shadow-xl overflow-hidden aspect-video flex flex-col justify-end">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.1),transparent)]"></div>
-            <IoStarSharp size={48} className="text-accent-400/20 absolute top-8 right-8" />
-            <h3 className="text-xl font-heading font-bold text-accent-400">100% Practical Focus</h3>
-            <p className="text-xs text-primary-100 mt-1 font-light leading-relaxed">
-              We continually iterate on course outlines based on real-world industrial guidelines, ensuring compliance and cutting-edge skillset delivery.
-            </p>
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary-850 via-primary-900 to-slate-900 p-8 text-left shadow-xl shadow-primary-900/20 group hover:-translate-y-1 transition-transform duration-300 min-h-[220px] flex flex-col justify-between border border-primary-800/40">
+            <div className="absolute top-4 right-4 text-accent-400/20 text-6xl select-none pointer-events-none">★</div>
+            <div className="h-11 w-11 rounded-2xl bg-primary-750 text-accent-400 flex items-center justify-center shadow-inner border border-primary-750/30">
+              <IoStarSharp size={22} />
+            </div>
+            <div className="space-y-2 mt-4">
+              <h3 className="text-xl font-heading font-bold text-accent-400">100% Practical Focus</h3>
+              <p className="text-sm text-primary-200/90 leading-relaxed font-normal">
+                We continually iterate on course outlines based on real-world industrial guidelines, ensuring compliance and cutting-edge skillset delivery.
+              </p>
+            </div>
           </div>
         </div>
 
