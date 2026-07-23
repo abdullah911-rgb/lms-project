@@ -125,21 +125,9 @@ export default function ZoomClassroom() {
 
         if (!isMounted) return;
 
-        // 4. Create client and register connection listener
+        // 4. Create client
         const client = ZoomMtgEmbedded.createClient();
         clientRef.current = client;
-
-        client.on('connection-change', (ev) => {
-          if (!isMounted) return;
-          console.log('[Zoom] connection-change:', ev);
-          if (ev?.state === 'Fail') {
-            handleJoinFailure(
-              ev.reason || ev.errorMessage || 'Connection failed. Signature may be invalid.'
-            );
-          } else if (ev?.state === 'Closed' && hasJoinedRef.current) {
-            handleLeave();
-          }
-        });
 
         // 5. Init — wrap in try/catch to handle SDK-internal crashes
         const containerEl = containerRef.current;
@@ -161,6 +149,19 @@ export default function ZoomClassroom() {
         }
 
         if (!isMounted) return;
+
+        // Register connection listener AFTER client.init to avoid "includes" of undefined error
+        client.on('connection-change', (ev) => {
+          if (!isMounted) return;
+          console.log('[Zoom] connection-change:', ev);
+          if (ev?.state === 'Fail') {
+            handleJoinFailure(
+              ev.reason || ev.errorMessage || 'Connection failed. Signature may be invalid.'
+            );
+          } else if (ev?.state === 'Closed' && hasJoinedRef.current) {
+            handleLeave();
+          }
+        });
 
         // 6. Join — do NOT pass `role`; it is already encoded in the signature
         const safeEmail = (user?.email && user.email.includes('@')) ? user.email : 'student@lms.com';
